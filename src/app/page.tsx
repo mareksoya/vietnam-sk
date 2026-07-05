@@ -1,131 +1,128 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Map,
-  CalendarDays,
-  Utensils,
-  Coffee,
-  Waves,
-  Mountain,
-  Landmark,
-  Laptop,
-  ArrowRight,
-  ShieldCheck,
-  CreditCard,
-  Wifi,
-  Stamp,
-} from "lucide-react";
 import { SearchPanel } from "@/components/home/search-panel";
 import { DestinationCard } from "@/components/cards/destination-card";
 import { destinations } from "@/lib/data/destinations";
+import { upcomingEvents } from "@/lib/data/events";
 
-const categories = [
-  { icon: Landmark, label: "Kultúra a UNESCO", href: "/destinacie?typ=UNESCO" },
-  { icon: Waves, label: "Pláže a ostrovy", href: "/destinacie?typ=pláž" },
-  { icon: Mountain, label: "Hory a treking", href: "/destinacie?typ=hory" },
-  { icon: Utensils, label: "Street food", href: "/gastro" },
-  { icon: Coffee, label: "Kávová kultúra", href: "/gastro" },
-  { icon: Laptop, label: "Digitálni nomádi", href: "/nomadi" },
-  { icon: CalendarDays, label: "Festivaly", href: "/udalosti" },
-  { icon: Map, label: "Interaktívna mapa", href: "/mapa" },
-];
-
-const practical = [
-  {
-    icon: Stamp,
-    title: "Víza a vstup",
-    text: "E-víza za 25 USD do 90 dní, alebo bezvízový Phu Quoc. Ako na to krok za krokom.",
-  },
-  {
-    icon: Wifi,
-    title: "SIM a eSIM",
-    text: "Viettel vs. Mobifone, eSIM pred odletom od 5 €. Internet je vo Vietname rýchly a lacný.",
-  },
-  {
-    icon: CreditCard,
-    title: "Mena a ceny",
-    text: "1 € ≈ 27 000 VND. Pho za 2 €, hotel od 20 €. Kde vyberať z bankomatu bez poplatkov.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Bezpečnosť a scamy",
-    text: "Vietnam je bezpečná krajina. Naučte sa rozpoznať taxi a zmenárenské triky vopred.",
-  },
-];
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString("sk-SK", {
+    day: "numeric",
+    month: "short",
+  });
+}
 
 export default function Home() {
+  const events = upcomingEvents().slice(0, 4);
+
   return (
     <>
-      {/* ── HERO ─────────────────────────────────────── */}
-      <section className="relative flex min-h-[100svh] flex-col items-center justify-center px-4 pb-16 pt-32">
+      {/* ── HERO: fotka vedie, UI ustupuje (§1) ─────────── */}
+      <section className="relative mt-16 h-[60vh] min-h-[420px] w-full">
         <Image
           src="/images/homepage_bg_AdobeStock_337232364.jpeg"
-          alt="Zátoka Ha Long, Vietnam"
+          alt="Zátoka Hạ Long ráno — vápencové ostrovy a výletné lode"
           fill
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-background" />
-
-        <div className="relative z-10 flex flex-col items-center text-center animate-fade-up">
-          <p className="mb-4 rounded-full bg-white/20 px-4 py-1.5 text-xs font-medium tracking-wide text-white backdrop-blur-md">
-            Inteligentný cestovateľský sprievodca
-          </p>
-          <h1 className="font-display text-5xl font-semibold tracking-tight text-white drop-shadow-lg md:text-7xl">
-            Objav Vietnam
-          </h1>
-          <p className="mt-4 max-w-xl text-base text-white/90 drop-shadow md:text-lg">
-            Naplánuj celú dovolenku na jednom mieste — od inšpirácie až po
-            návrat domov. Itinerár na mieru ti vytvorí AI za pár sekúnd.
-          </p>
-        </div>
-
-        <div className="relative z-10 mt-10 w-full max-w-4xl animate-fade-up">
-          <SearchPanel />
+        <div className="photo-scrim absolute inset-0" />
+        <div className="absolute inset-x-0 bottom-0">
+          <div className="mx-auto max-w-[1200px] px-4 pb-12 md:px-8">
+            <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-white/90">
+              Severný Vietnam · Zátoka Hạ Long
+            </p>
+            <h1 className="mt-2 max-w-2xl font-display text-[39px] font-semibold leading-[1.15] text-white md:text-[49px]">
+              Naplánuj si Vietnam sám. My ti dáme fakty.
+            </h1>
+            <p className="mt-3 max-w-xl text-white/90">
+              Itineráre deň po dni, reálne ceny a praktické rady od ľudí, ktorí
+              tam boli — bez marketingových superlatívov.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* ── KATEGÓRIE ────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-          Čo ťa láka?
-        </h2>
-        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-          {categories.map((c) => (
-            <Link
-              key={c.label}
-              href={c.href}
-              className="group flex flex-col items-start gap-4 rounded-3xl border border-border bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lift"
-            >
-              <span className="rounded-2xl bg-primary-light p-3 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
-                <c.icon size={22} />
-              </span>
-              <span className="text-sm font-medium">{c.label}</span>
-            </Link>
-          ))}
-        </div>
+      {/* ── PLÁNOVAČ ────────────────────────────────────── */}
+      <section className="mx-auto -mt-10 max-w-[1200px] px-4 md:px-8">
+        <SearchPanel />
       </section>
 
-      {/* ── TOP DESTINÁCIE ───────────────────────────── */}
-      <section className="bg-muted/60 py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="flex items-end justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-                Top destinácie
-              </h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Miesta, ktoré by nemali chýbať v žiadnom itinerári.
-              </p>
+      {/* ── SAND BOX: praktický rýchly prehľad (§3) ─────── */}
+      <section className="mx-auto max-w-[1200px] px-4 py-12 md:px-8 md:py-24">
+        <div className="grid gap-12 md:grid-cols-[1fr_380px]">
+          <div>
+            <p className="eyebrow">Objav Vietnam</p>
+            <h2 className="mt-2 max-w-lg text-[31px] font-semibold">
+              Kam sa oplatí ísť — 12 destinácií so sprievodcom
+            </h2>
+            <p className="mt-3 max-w-lg text-muted-foreground">
+              Od ryžových terás v Sa Pa po pláže Phú Quốcu. Pri každej
+              destinácii nájdeš najlepší čas návštevy, odporúčaný počet dní a
+              konkrétne tipy.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+              <Link href="/destinacie" className="text-sm font-medium text-foreground underline decoration-border underline-offset-4 transition-colors duration-150 hover:text-lacquer hover:decoration-lacquer">
+                Všetky destinácie
+              </Link>
+              <Link href="/mapa" className="text-sm font-medium text-foreground underline decoration-border underline-offset-4 transition-colors duration-150 hover:text-lacquer hover:decoration-lacquer">
+                Interaktívna mapa
+              </Link>
+              <Link href="/udalosti" className="text-sm font-medium text-foreground underline decoration-border underline-offset-4 transition-colors duration-150 hover:text-lacquer hover:decoration-lacquer">
+                Udalosti a festivaly
+              </Link>
             </div>
+          </div>
+
+          <div className="sand-box">
+            <p className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.06em] text-jade">
+              Pred odletom · platné 2026
+            </p>
+            <dl className="mt-4 space-y-3 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt>E-víza (90 dní)</dt>
+                <dd className="data-num text-foreground">25–50 USD</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt>Kurz</dt>
+                <dd className="data-num text-foreground">1 € ≈ 27 500 VND</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt>Miska phở na ulici</dt>
+                <dd className="data-num text-foreground">~2 €</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt>Hotel (stredná trieda)</dt>
+                <dd className="data-num text-foreground">20–40 € / noc</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt>SIM s neobmedzenými dátami</dt>
+                <dd className="data-num text-foreground">8–13 € / 30 dní</dd>
+              </div>
+            </dl>
             <Link
-              href="/destinacie"
-              className="hidden items-center gap-1 text-sm font-medium text-primary hover:underline md:flex"
+              href="/prakticke-info"
+              className="mt-5 inline-block text-sm font-medium text-lacquer underline underline-offset-4 hover:text-lacquer-deep"
             >
-              Všetky destinácie <ArrowRight size={15} />
+              Otvoriť praktické info
             </Link>
           </div>
-          <div className="scroll-fade mt-8 flex gap-5 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible">
+        </div>
+      </section>
+
+      {/* ── TOP DESTINÁCIE ─────────────────────────────── */}
+      <section className="border-y border-border bg-surface py-12 md:py-24">
+        <div className="mx-auto max-w-[1200px] px-4 md:px-8">
+          <div className="flex items-end justify-between">
+            <h2 className="text-[31px] font-semibold">Najčítanejšie destinácie</h2>
+            <Link
+              href="/destinacie"
+              className="hidden text-sm font-medium text-foreground underline decoration-border underline-offset-4 hover:text-lacquer hover:decoration-lacquer md:block"
+            >
+              Zobraziť všetky
+            </Link>
+          </div>
+          <div className="scroll-fade mt-8 flex gap-6 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible">
             {destinations.slice(0, 6).map((d) => (
               <DestinationCard key={d.slug} d={d} />
             ))}
@@ -133,59 +130,42 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── AI PLANNER CTA ───────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-primary-dark px-8 py-16 text-center shadow-lift md:px-16">
-          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-primary/40 blur-3xl" />
-          <div className="absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-accent/25 blur-3xl" />
-          <div className="relative">
-            <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-              AI Plánovač
-            </p>
-            <h2 className="mx-auto mt-3 max-w-2xl font-display text-3xl font-semibold text-white md:text-4xl">
-              Itinerár deň po dni — presuny, jedlo, hotely aj rozpočet
+      {/* ── NAJBLIŽŠIE UDALOSTI ─────────────────────────── */}
+      <section className="mx-auto max-w-[1200px] px-4 py-12 md:px-8 md:py-24">
+        <div className="grid gap-10 md:grid-cols-[380px_1fr]">
+          <div>
+            <p className="eyebrow">Kalendár</p>
+            <h2 className="mt-2 text-[31px] font-semibold">
+              Čo sa chystá vo Vietname
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-white/80 md:text-base">
-              Zadáš dátumy, letiská, rozpočet a štýl cestovania. AI zostaví celý
-              plán s mapou a nákladmi. Exportuješ do PDF, Google Maps či
-              kalendára.
+            <p className="mt-3 text-muted-foreground">
+              Festivaly a sviatky z oficiálnych zdrojov vietnamského turizmu —
+              vrátane termínov, ktoré ovplyvnia tvoju cestu.
             </p>
             <Link
-              href="/planovac"
-              className="mt-8 inline-flex h-14 items-center gap-2 rounded-full bg-accent px-8 text-base font-semibold text-white shadow-lift transition hover:brightness-110"
+              href="/udalosti"
+              className="mt-5 inline-flex h-11 items-center rounded-md border border-foreground px-5 text-sm font-medium transition-colors duration-150 hover:bg-sand"
             >
-              Vyskúšať plánovač <ArrowRight size={18} />
+              Otvoriť celý kalendár
             </Link>
           </div>
-        </div>
-      </section>
-
-      {/* ── PRAKTICKÉ INFO ───────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-6 pb-20">
-        <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-          Praktické informácie
-        </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Všetko, čo potrebuješ vybaviť pred odletom.
-        </p>
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          {practical.map((p) => (
-            <Link
-              key={p.title}
-              href="/prakticke-info"
-              className="group flex gap-5 rounded-3xl border border-border bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift"
-            >
-              <span className="h-fit rounded-2xl bg-accent-light p-3 text-accent">
-                <p.icon size={22} />
-              </span>
-              <div>
-                <h3 className="font-semibold">{p.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-foreground/70">
-                  {p.text}
-                </p>
-              </div>
-            </Link>
-          ))}
+          <ul className="divide-y divide-border">
+            {events.map((e) => (
+              <li key={e.slug} className="flex items-baseline gap-5 py-4">
+                <span className="data-num w-24 shrink-0 text-[13px]">
+                  {fmtDate(e.startDate)}
+                  {e.endDate ? ` – ${fmtDate(e.endDate)}` : ""}
+                </span>
+                <div>
+                  <p className="font-medium leading-snug">{e.name}</p>
+                  <p className="data-num mt-0.5 text-[13px]">
+                    {e.city ? `${e.city} · ` : ""}
+                    {e.region}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </>

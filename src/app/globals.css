@@ -1,32 +1,48 @@
 @import "tailwindcss";
 
+/*
+ * Dizajn tokeny podľa docs/vietnam-sk-design-system.md (§2).
+ * Semantické premenné — nikdy nehardcodovať hex v komponentoch.
+ */
 @theme {
-  /* Farby — Vietnam.sk dizajn systém */
-  --color-background: #fdfdfc;
-  --color-foreground: #1a1a1a;
-  --color-muted: #f4f5f3;
-  --color-muted-foreground: #6b7280;
-  --color-primary: #2d6a4f;
-  --color-primary-dark: #1b4332;
-  --color-primary-light: #d8f0e3;
-  --color-accent: #c9a227;
-  --color-accent-light: #f5ecd0;
-  --color-border: #e7e8e5;
+  /* Base */
+  --color-background: #fbfaf7; /* rice-paper white */
+  --color-surface: #ffffff;
+  --color-foreground: #151816; /* ink */
+  --color-muted-foreground: #454d48; /* ink-muted */
+  --color-border: #e5e2da; /* line */
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-playfair), ui-serif, Georgia, serif;
+  /* Accents */
+  --color-lacquer: #b3372b;
+  --color-lacquer-deep: #8e2a21;
+  --color-jade: #2f6d5e;
+  --color-sand: #efe7d8;
 
-  --radius-xl2: 1.5rem;
+  /* Aliasy pre existujúce komponenty (migrácia na nové názvy prebieha) */
+  --color-primary: #b3372b; /* primárne CTA = lacquer */
+  --color-primary-dark: #8e2a21;
+  --color-primary-light: #e6edea; /* jade tint 10 % — pozadia tagov/chipov */
+  --color-accent: #2f6d5e; /* sekundárny akcent = jade */
+  --color-accent-light: #e6edea;
+  --color-muted: #f3f0e9; /* tlmené sekcie: sand 50 % na bg */
 
-  --shadow-soft: 0 4px 24px rgb(0 0 0 / 0.06);
-  --shadow-lift: 0 12px 40px rgb(0 0 0 / 0.12);
+  --font-display: var(--font-serif-display), Georgia, serif;
+  --font-sans: var(--font-body-sans), -apple-system, "Segoe UI", sans-serif;
 
-  --animate-fade-up: fade-up 0.6s ease-out both;
+  /* Shape & elevation (§2) */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+
+  --shadow-soft: 0 1px 3px rgb(31 36 33 / 0.08); /* shadow-sm */
+  --shadow-lift: 0 8px 24px rgb(31 36 33 / 0.1); /* shadow-md */
+
+  --animate-fade-up: fade-up 0.25s cubic-bezier(0.2, 0, 0, 1) both;
 
   @keyframes fade-up {
     from {
       opacity: 0;
-      transform: translateY(16px);
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
@@ -39,25 +55,78 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  letter-spacing: -0.008em;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Glassmorphism panel */
-.glass {
-  background: rgb(255 255 255 / 0.72);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgb(255 255 255 / 0.45);
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
 }
 
-.glass-dark {
-  background: rgb(20 30 25 / 0.55);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgb(255 255 255 / 0.15);
+h3,
+h4 {
+  line-height: 1.15;
+  letter-spacing: -0.01em;
 }
 
-/* Jemný scrollbar pre horizontálne carousely */
+/* Eyebrow label (§2 typography) */
+.eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-jade);
+}
+
+/* Číselné dáta (§2) */
+.data-num {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+}
+
+/*
+ * Signature element (§3): sand box — praktické info panel.
+ * Sand pozadie výhradne pre akčné fakty (víza, ceny, doprava).
+ */
+.sand-box {
+  background: var(--color-sand);
+  border-left: 8px solid var(--color-lacquer);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+}
+@media (max-width: 640px) {
+  .sand-box {
+    padding: 16px;
+    border-radius: 0;
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+}
+
+/* Sticky nav podklad (§4 Navigation) — nie glassmorphism kariet */
+.nav-bar {
+  background: rgb(251 250 247 / 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Legibility gradient pre text na fotkách (§9) */
+.photo-scrim {
+  background: linear-gradient(
+    to top,
+    rgb(21 24 22 / 0.6),
+    rgb(21 24 22 / 0.25) 45%,
+    rgb(21 24 22 / 0) 75%
+  );
+}
+
 .scroll-fade {
   scrollbar-width: none;
 }
@@ -66,5 +135,20 @@ body {
 }
 
 ::selection {
-  background: var(--color-primary-light);
+  background: var(--color-sand);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-jade);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    transform: none !important;
+  }
 }
