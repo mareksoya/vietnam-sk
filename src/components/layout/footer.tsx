@@ -34,21 +34,21 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
 
 export function Footer() {
   return (
-    <footer className="mt-24 bg-foreground text-background">
+    <footer className="mt-24 border-t border-border bg-sand-gray text-foreground">
       <div className="mx-auto max-w-[1200px] px-4 py-16 md:px-8">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
             <p className="font-display text-xl font-medium">
               vietnam<span className="text-lacquer">.sk</span>
             </p>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-background/70">
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Sprievodca Vietnamom pre slovenských a českých cestovateľov.
               Konkrétne rady, reálne ceny, žiadne marketingové superlatívy.
             </p>
           </div>
           {columns.map((col) => (
             <div key={col.title}>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-background/60">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
                 {col.title}
               </p>
               <ul className="mt-4 space-y-2.5">
@@ -56,7 +56,7 @@ export function Footer() {
                   <li key={l.label}>
                     <Link
                       href={l.href}
-                      className="text-sm text-background/85 underline-offset-4 transition-colors duration-150 hover:text-background hover:underline"
+                      className="text-sm text-foreground/80 underline-offset-4 transition-colors duration-150 hover:text-jade hover:underline"
                     >
                       {l.label}
                     </Link>
@@ -66,7 +66,7 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-14 flex flex-col justify-between gap-3 border-t border-background/15 pt-8 text-[13px] text-background/60 md:flex-row">
+        <div className="mt-14 flex flex-col justify-between gap-3 border-t border-border pt-8 text-[13px] text-muted-foreground md:flex-row">
           <p className="data-num">© {new Date().getFullYear()} vietnam.sk</p>
           <p>Fotografie: Adobe Stock (licencované)</p>
         </div>

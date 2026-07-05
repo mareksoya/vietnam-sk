@@ -12,8 +12,12 @@ import {
   Download,
   Map as MapIcon,
   CalendarPlus,
+  MapPin,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import { cn, formatEur } from "@/lib/utils";
+import { MapboxMini } from "@/components/map/mapbox-mini";
 import {
   sampleItinerary,
   type ItemType,
@@ -52,6 +56,14 @@ export function ItineraryView({
 }) {
   const data = itinerary ?? sampleItinerary;
   const [activeDay, setActiveDay] = useState(data.days[0]?.day ?? 1);
+  // Vybraný bod programu (posunie mini mapu); null = stred dňa
+  const [activePoint, setActivePoint] = useState<{
+    lat: number;
+    lng: number;
+    zoom: number;
+    key: string;
+  } | null>(null);
+  const [mapExpanded, setMapExpanded] = useState(false);
 
   const totalCost = useMemo(
     () =>
@@ -103,7 +115,10 @@ export function ItineraryView({
         {data.days.map((d) => (
           <button
             key={d.day}
-            onClick={() => setActiveDay(d.day)}
+            onClick={() => {
+              setActiveDay(d.day);
+              setActivePoint(null);
+            }}
             className={cn(
               "shrink-0 rounded-full px-5 py-2.5 text-sm font-medium transition-all",
               activeDay === d.day
@@ -116,8 +131,13 @@ export function ItineraryView({
         ))}
       </div>
 
-      {/* Timeline dňa */}
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
+      {/* Timeline dňa + mapa (zväčšenie = 50/50 vedľa seba) */}
+      <div
+        className={cn(
+          "mt-6 grid gap-6",
+          mapExpanded ? "lg:grid-cols-2" : "lg:grid-cols-[1fr_360px]"
+        )}
+      >
         <div className="rounded-3xl border border-border bg-white p-6 shadow-soft md:p-8">
           <div className="flex items-baseline justify-between">
             <div>
@@ -133,45 +153,78 @@ export function ItineraryView({
           <ol className="mt-8 space-y-0">
             {day.items.map((item, i) => {
               const Icon = icons[item.type as ItemType] ?? Lightbulb;
-              const isTip = item.type === "tip";
+              const precise =
+                typeof item.lat === "number" && typeof item.lng === "number";
+              const pLat = precise ? item.lat! : day.lat;
+              const pLng = precise ? item.lng! : day.lng;
+              const key = `${day.day}-${i}`;
+              const isActive = activePoint?.key === key;
+              const onPick = () =>
+                setActivePoint(
+                  isActive
+                    ? null
+                    : { lat: pLat, lng: pLng, zoom: precise ? 14 : 12, key }
+                );
               return (
-                <li key={i} className="relative flex gap-4 pb-8 last:pb-0">
+                <li key={i} className="relative pb-8 last:pb-0">
                   {i < day.items.length - 1 && (
                     <span className="absolute left-[21px] top-11 h-[calc(100%-2.75rem)] w-px bg-border" />
                   )}
-                  <span
+                  <button
+                    type="button"
+                    onClick={onPick}
+                    aria-pressed={isActive}
+                    title="Zobraziť na mape"
                     className={cn(
-                      "z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl",
-                      isTip
-                        ? "bg-accent-light text-accent"
-                        : "bg-accent-light text-accent"
+                      "group -mx-2 flex w-full cursor-pointer gap-4 rounded-lg px-2 py-2 text-left transition-colors duration-150 hover:bg-sand/60",
+                      isActive && "bg-sand"
                     )}
                   >
-                    <Icon size={19} />
-                  </span>
-                  <div className="min-w-0 pt-0.5">
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                      {item.time && (
-                        <span className="flex items-center gap-1 text-xs font-semibold text-accent">
-                          <Clock size={11} /> {item.time}
-                        </span>
+                    <span
+                      className={cn(
+                        "z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-colors",
+                        isActive
+                          ? "bg-jade text-white"
+                          : "bg-accent-light text-accent"
                       )}
-                      <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                        {item.type}
-                      </span>
-                      {item.costEur !== undefined && (
-                        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium">
-                          ~{formatEur(item.costEur)}
+                    >
+                      <Icon size={19} />
+                    </span>
+                    <div className="min-w-0 pt-0.5">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        {item.time && (
+                          <span className="flex items-center gap-1 text-xs font-semibold text-accent">
+                            <Clock size={11} /> {item.time}
+                          </span>
+                        )}
+                        <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                          {item.type}
                         </span>
+                        {item.costEur !== undefined && (
+                          <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium">
+                            ~{formatEur(item.costEur)}
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1 flex items-center gap-1.5 font-medium leading-snug">
+                        {item.title}
+                        <MapPin
+                          size={13}
+                          className={cn(
+                            "shrink-0 transition-colors",
+                            isActive
+                              ? "text-jade"
+                              : "text-muted-foreground/40 group-hover:text-jade"
+                          )}
+                        />
+                      </p>
+                      {item.description && (
+                        <p className="mt-1 text-sm leading-relaxed text-foreground/65">
+                          {item.description}
+                        </p>
                       )}
                     </div>
-                    <p className="mt-1 font-medium leading-snug">{item.title}</p>
-                    {item.description && (
-                      <p className="mt-1 text-sm leading-relaxed text-foreground/65">
-                        {item.description}
-                      </p>
-                    )}
-                  </div>
+                  </button>
                 </li>
               );
             })}
@@ -180,17 +233,27 @@ export function ItineraryView({
 
         {/* Mini mapa dňa */}
         <aside className="h-fit space-y-4 lg:sticky lg:top-28">
-          <div className="overflow-hidden rounded-3xl border border-border shadow-soft">
-            <iframe
-              title={`Mapa — ${day.location}`}
-              className="h-64 w-full"
-              loading="lazy"
-              src={`https://www.openstreetmap.org/export/embed.html?bbox=${day.lng - 0.25},${day.lat - 0.18},${day.lng + 0.25},${day.lat + 0.18}&marker=${day.lat},${day.lng}`}
+          <div className="relative overflow-hidden rounded-3xl border border-border shadow-soft">
+            <MapboxMini
+              lat={activePoint?.lat ?? day.lat}
+              lng={activePoint?.lng ?? day.lng}
+              zoom={activePoint?.zoom ?? 9}
+              heightCss={mapExpanded ? "62vh" : "16rem"}
+              label={day.location}
             />
+            <button
+              type="button"
+              onClick={() => setMapExpanded((v) => !v)}
+              title={mapExpanded ? "Zmenšiť mapu" : "Zväčšiť mapu"}
+              aria-label={mapExpanded ? "Zmenšiť mapu" : "Zväčšiť mapu"}
+              className="absolute left-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface/90 text-foreground shadow-soft backdrop-blur-sm transition-colors duration-150 hover:text-jade"
+            >
+              {mapExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            </button>
             <div className="bg-white p-4">
               <p className="text-sm font-medium">{day.location}</p>
               <p className="text-xs text-muted-foreground">
-                Interaktívna mapa celej trasy: sekcia Mapa
+                Tip: klikni na bod programu (📍) a mapa naň priletí.
               </p>
             </div>
           </div>

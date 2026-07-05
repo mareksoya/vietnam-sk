@@ -19,7 +19,8 @@ export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="nav-bar fixed inset-x-0 top-0 z-50">
+    <>
+      <header className="nav-bar fixed inset-x-0 top-0 z-50">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 md:px-8">
         <Link
           href="/"
@@ -62,24 +63,33 @@ export function Header() {
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
+      </header>
 
-      {/* Mobile: full-screen overlay na ink pozadí (§4) */}
+      {/* Mobile: svetlý overlay na rice-paper pozadí, tiché body-font linky (§4).
+          MIMO <header> — .nav-bar má backdrop-filter, ktorý robí z hlavičky
+          containing block pre position:fixed → inak by overlay nepokryl obrazovku. */}
       {open && (
-        <div className="fixed inset-0 top-16 z-40 bg-foreground md:hidden">
-          <nav className="flex flex-col gap-2 px-4 pt-10">
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="font-display py-3 text-[31px] font-medium text-background"
-              >
-                {item.label}
-              </Link>
-            ))}
+        <div className="fixed inset-0 top-16 z-40 bg-background md:hidden">
+          <nav className="flex flex-col px-4 pt-2">
+            {nav.map((item) => {
+              const active = pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "flex min-h-12 items-center border-b border-border text-[17px] font-medium tracking-[-0.008em] transition-colors duration-150",
+                    active ? "text-lacquer" : "text-foreground"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
       )}
-    </header>
+    </>
   );
 }

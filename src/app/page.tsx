@@ -3,6 +3,7 @@ import Link from "next/link";
 import { DestinationCard } from "@/components/cards/destination-card";
 import { destinations } from "@/lib/data/destinations";
 import { upcomingEvents } from "@/lib/data/events";
+import { TOOLS } from "@/lib/tools";
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString("sk-SK", {
@@ -221,6 +222,59 @@ export default function Home() {
         >
           Otvoriť celý kalendár
         </Link>
+      </section>
+
+      {/* ── INTERAKTÍVNE NÁSTROJE (rozcestník) ──────────── */}
+      <section className="border-t border-border bg-surface py-12 md:py-24">
+        <div className="mx-auto max-w-[1200px] px-4 md:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="eyebrow">Nástroje</p>
+              <h2 className="mt-2 text-[31px] font-semibold">
+                Interaktívne nástroje
+              </h2>
+              <p className="mt-3 max-w-xl text-muted-foreground">
+                Prepočet meny, rozpočet, čas vo Vietname, balíkový checklist a
+                vietnamčina — praktické pomôcky priamo v prehliadači.
+              </p>
+            </div>
+            <Link
+              href="/nastroje"
+              className="hidden h-11 items-center rounded-md border border-foreground px-5 text-sm font-medium transition-colors duration-150 hover:bg-sand md:inline-flex"
+            >
+              Všetky nástroje
+            </Link>
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {TOOLS.map((t) => (
+              <Link
+                key={t.id}
+                href={t.href}
+                className="group flex items-center gap-3 rounded-lg border border-border bg-background p-4 transition-colors duration-150 hover:border-jade/40"
+              >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-primary-light text-jade transition-colors group-hover:bg-jade group-hover:text-white">
+                  <t.icon size={20} />
+                </span>
+                <div className="min-w-0">
+                  <p className="font-medium leading-snug transition-colors group-hover:text-jade">
+                    {t.title}
+                  </p>
+                  <p className="text-[13px] leading-relaxed text-muted-foreground">
+                    {t.short}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <Link
+            href="/nastroje"
+            className="mt-8 inline-flex h-11 items-center rounded-md border border-foreground px-5 text-sm font-medium transition-colors duration-150 hover:bg-sand md:hidden"
+          >
+            Všetky nástroje
+          </Link>
+        </div>
       </section>
     </>
   );

@@ -17,6 +17,7 @@
   --color-lacquer-deep: #8e2a21;
   --color-jade: #2f6d5e;
   --color-sand: #efe7d8;
+  --color-sand-gray: #eceae3; /* chladnejší sivo-béžový podklad footera (medzi bg a sand) */
 
   /* Aliasy pre existujúce komponenty (migrácia na nové názvy prebieha) */
   --color-primary: #b3372b; /* primárne CTA = lacquer */
@@ -140,6 +141,20 @@ h4 {
 
 ::selection {
   background: var(--color-sand);
+}
+
+/* Mapbox ovládacie prvky (logo + atribúcia) — drž ich vnútri mapy s jemným
+   odstupom od okraja, nech nesplývajú s pätičkou pod mapou. */
+.mapboxgl-ctrl-bottom-left,
+.mapboxgl-ctrl-bottom-right {
+  bottom: 4px;
+  z-index: 1;
+}
+.mapboxgl-ctrl-bottom-left {
+  left: 4px;
+}
+.mapboxgl-ctrl-bottom-right {
+  right: 4px;
 }
 
 :focus-visible {

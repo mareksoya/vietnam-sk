@@ -38,6 +38,7 @@ Semantic variables only. Never hardcode hex values in components.
   --color-jade:          #2F6D5E;  /* Hạ Long jade — secondary accent: tags, success, map markers */
   --color-jade-deep:     #245A4C;  /* jade-deep — hover interaktívnych jade prvkov (accent-dark) */
   --color-sand:          #EFE7D8;  /* warm sand — highlighted info boxes, practical-tip panels */
+  --color-sand-gray:     #ECEAE3;  /* cool gray-sand — footer background; sits between --color-bg and --color-sand, grayer/cooler than the sand box so the two stay distinct */
 
   /* Functional */
   --color-focus:         #2F6D5E;  /* focus rings, always visible */
@@ -50,7 +51,7 @@ Semantic variables only. Never hardcode hex values in components.
 - `--color-jade` for: active navigation state, inline link hover, category tags, active filters/chips, map pins, success states, small metadata icons, accent figures. Hover interaktívnych jade prvkov používa `--color-accent-dark` (jade-deep `#245A4C`).
 - `--color-sand` only for: "practical info" boxes (visa, prices, transport). This becomes the site's recognizable pattern — readers learn that sand background = actionable facts.
 - Photos are the only large color surfaces. UI stays in the neutral range.
-- Dark sections (footer, occasional full-bleed photo overlays) use `--color-ink` as background with `--color-bg` text.
+- *(2026-07-05)* **Footer nie je tmavá sekcia.** Footer používa svetlý `--color-sand-gray` podklad, hornú linku 1px `--color-line`, text `--color-ink` / sekundárny `--color-ink-muted`. `--color-ink` ako pozadie je vyhradené len pre občasné full-bleed foto overlaye (napr. mobilné hero scrimy), NIE pre footer ani navigáciu.
 - *(2026-07-05)* Povolený **jade tint 10 %** (`#E6EDEA`, resp. `color-mix(jade 10%, white)`) výhradne ako pozadie tagov/chipov a malých metadata ikon. Nie je to nová farba, ale odvodený odtieň jade.
 
 ### Typography
@@ -84,7 +85,7 @@ Loading rules:
 - Both families are OFL-licensed.
 
 - **Scale (ratio 1.25, base 16px):** 16 / 20 / 25 / 31 / 39 / 49. Mobile caps at 39px for H1.
-- **Line-height:** body 1.65; headings 1.15; captions 1.4.
+- **Line-height:** body 1.65; headings 1.15; captions 1.4. *(2026-07-05 — spresnenie)* **Nezhusťuj skladaný text.** Nadpis sekcie + popis pod ním, štítok + hodnota, SK riadok + preklad — vždy medzi ne daj vertikálny odstup (`mt-1`–`mt-2`) a viacriadkový text nechaj `leading-relaxed`, nie `leading-snug`/`leading-tight`. Tesné riadkovanie pôsobí lacno.
 - **Line width:** body text max-width 68ch, never wider.
 - **Weights:** body 400, emphasis 600. Display headings 500–600, never 700+.
 - **Letter-spacing:** H1–H2 −0.025em; H3/card titles −0.01em; body −0.008em; eyebrows +0.06em uppercase 12–13px.
@@ -119,7 +120,9 @@ Loading rules:
 
 **Cards (destination/article).** Photo top (aspect 3:2, radius-lg, cover), jade category tag overlapping photo bottom-left, H3 in body font 600, 2-line excerpt `--color-ink-muted`, meta row 13px tabular-nums. Hover: shadow-md + photo scale 1.03 within 250ms. Grid: 3 columns desktop, 1 column mobile — stagger or vary card sizes on landing pages.
 
-**Navigation.** Sticky top bar, `--color-bg` at 95% opacity with backdrop-blur, 1px bottom `--color-line`. Logo left (wordmark "vietnam.sk" in Source Serif 4 500). Active item: lacquer text + 2px lacquer underline offset 6px. Mobile: full-screen overlay menu on `--color-ink` background, links in Source Serif 4 31px.
+**Navigation.** Sticky top bar, `--color-bg` at 95% opacity with backdrop-blur, 1px bottom `--color-line`. Logo left (wordmark "vietnam.sk" in Source Serif 4 500). Active item: lacquer text + 2px lacquer underline offset 6px. *(2026-07-05)* **Mobile menu — light & quiet:** full-screen overlay on `--color-bg` (rice-paper, NIE ink), text `--color-ink`. Links v `--font-body` (Be Vietnam Pro) weight 500, 17px, letter-spacing −0.008em (NIE display serif, NIE zväčšené). Riadky min. výška 48px, bočný padding 16px, medzi položkami 1px `--color-line` deliaca linka. Aktívna položka: lacquer text, bez podčiarknutia.
+
+**Footer.** *(2026-07-05)* Podklad `--color-sand-gray`, horná linka 1px `--color-line`. Nadpis/text `--color-ink`, sekundárny text a odkazy `--color-ink-muted` (hover → jade + underline). Wordmark „.sk" zostáva lacquer. Prípadné primárne CTA (napr. newsletter) zostáva lacquer red. Žiadne tmavé pozadie. Kontrast: body na `--color-sand-gray` ≥ 7:1, malý text ≥ 4.5:1 (overené: ink #151816 aj ink-muted #454D48 na #ECEAE3 spĺňajú).
 
 **Article layout.** Hero: full-width photo max-height 60vh with caption. Eyebrow (region, jade) → H1 Source Serif 4 → lead 20px ink-muted → meta row → body 720px column. Sand boxes interleaved with prose. Photos always captioned.
 
@@ -179,6 +182,11 @@ Loading rules:
 - **2026-07-05 · Červená len na hlavné CTA.** Lacquer sa sťahuje výhradne na primárne CTA tlačidlá (+ wordmark `.sk`); aktívna navigácia, hover odkazov, aktívne filtre, tagy, metadata ikony a akcentové texty sa naprieč webom prepli na **jade**. Pridaný token `--color-accent-dark` / `--color-jade-deep` `#245A4C` pre hover jade prvkov. Kategórie udalostí zjednotené na jade tint (zrušený „rainbow" sky/orange/violet/red — rozlišuje text, nie farba, súlad s §2 a §9 „one accent").
 - **2026-07-05 · Hero úvodky = fotka na celé pozadie.** Hero má fotku cez celý priestor (min-h 70vh) + legibility gradient; plánovač už nie je na úvodke (len na `/planovac`), v hero ostal nadpis, lead a jedno CTA „Spustiť plánovač". Kalendár na úvodke má deep-linky na `/udalosti#slug` (kotvy doplnené do zoznamu udalostí).
 - **2026-07-05 · Mapa.** Popisky: Mapbox nemá slovenský dataset (`name_sk` neexistuje), preto základ = latinka (`name_en` → fallback `name`, žiadne čínske znaky) + **slovník slovenských exoným** (`SK_NAMES` v `vietnam-map.tsx`) pre hlavné viditeľné názvy (krajiny vrátane Číny, moria, veľké mestá). Rozšíriteľné pridaním do slovníka. Panely mapy (filter + detail) mali nedefinovanú triedu `.glass` (priehľadné, nečitateľné) → podfarbené na `bg-surface/70` + border (súlad so zákazom glassmorphism §9). Hover položiek v zozname používa `sand` (predtým biela → v bielom paneli nebola vidno). Ľavý panel: hlavička (názov + filter tagy) fixná, scrolluje sa len zoznam miest.
+- **2026-07-05 · Interaktívne nástroje.** `/nastroje` = rozcestník (karty) + samostatná stránka pre každý nástroj (`/nastroje/mena`, `/rozpocet`, `/cas`, `/balenie`, `/vietnamcina`). Metadáta v `src/lib/tools.ts`, spoločný rámec `ToolPage`. Nástroje: prevod EUR/VND, kalkulačka rozpočtu, čas vo Vietname (živé hodiny), balíkový checklist (localStorage), vietnamčina (frázy + prehrávanie cez Web Speech API `vi-VN`). Rozcestník aj na homepage.
+- **2026-07-05 · Mapy = mercator.** mapbox-gl v3 má default globe projekciu, ktorá pri zoome robila biele dlaždice → obe mapy vynucujú `projection: "mercator"`. Mini mapa v itinerári dostáva výšku inline štýlom (Tailwind trieda sa nestihla aplikovať pred inicializáciou → nulová výška → biely canvas) + `ResizeObserver`/`resize()`.
+- **2026-07-05 · Riadkovanie** (detail v §2 Typography) — zákaz zhusteného skladaného textu.
+- **2026-07-05 · Footer = svetlý.** Footer sa mení z tmavého ink podkladu na svetlý `--color-sand-gray` (#ECEAE3, nový token) + horná linka `--color-line`, text ink/ink-muted, odkazy hover jade. Pravidlo „dark sections" v §2 prepísané — footer už nie je tmavá sekcia (detail v §2 a §4 Footer).
+- **2026-07-05 · Mobilné menu = tiché.** Overlay na `--color-bg` (nie ink), linky v body fonte 500/17px/−0.008em (nie serif 31px), riadky 48px + 1px deliace linky, aktívna položka lacquer bez podčiarknutia (detail v §4 Navigation).
 - **2026-07-05 · Migračný dlh:** vnútorné stránky (/planovac, /mapa, /udalosti, /prakticke-info, /destinacie/[slug]) zdedili nové tokeny cez CSS premenné, ale ešte používajú staré tvary (rounded-full pills, rounded-3xl karty). Postupne sa prepisujú na radius-sm/md/lg podľa §2 — pri každej ďalšej úprave súboru zosúladiť.
 
 ---

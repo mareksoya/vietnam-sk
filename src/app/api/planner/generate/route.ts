@@ -30,6 +30,15 @@ interface PlannerInput {
 
 const MODEL = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
 
+// GPS letísk — bod príletu/odletu na mape musí byť letisko, nie hotel.
+const AIRPORTS: Record<string, { name: string; lat: number; lng: number }> = {
+  HAN: { name: "Noi Bai (Hanoj)", lat: 21.2212, lng: 105.8072 },
+  SGN: { name: "Tan Son Nhat (Ho Či Minovo mesto)", lat: 10.8188, lng: 106.652 },
+  DAD: { name: "Da Nang", lat: 16.0439, lng: 108.1994 },
+  CXR: { name: "Cam Ranh (Nha Trang)", lat: 11.9982, lng: 109.2192 },
+  PQC: { name: "Phu Quoc", lat: 10.1698, lng: 103.9931 },
+};
+
 function buildPrompt(input: PlannerInput) {
   const days = Math.min(Math.max(Number(input.days) || 14, 3), 30);
   const context = destinations
@@ -38,6 +47,9 @@ function buildPrompt(input: PlannerInput) {
         `${d.name} (${d.type}, ${d.region}, GPS ${d.lat},${d.lng}, letisko ${d.nearestAirport}, odporúčané ${d.recommendedDays} dni, najlepšie mesiace ${d.bestMonths.join("/")})`
     )
     .join("\n");
+
+  const arr = AIRPORTS[input.arrive ?? "HAN"] ?? AIRPORTS.HAN;
+  const dep = AIRPORTS[input.depart ?? "SGN"] ?? AIRPORTS.SGN;
 
   const prefs: string[] = [];
   if (input.kids) prefs.push("cestuje s deťmi — pomalšie tempo, kid-friendly aktivity, žiadne nočné presuny");
@@ -51,7 +63,8 @@ VSTUP:
 - Počet dní: ${days}
 - Dátum začiatku: ${input.date || "neurčený"}
 - Kam chce ísť: ${input.where || "celý Vietnam / navrhni najlepšiu trasu"}
-- Prílet: letisko ${input.arrive || "HAN"}, odlet: letisko ${input.depart || "SGN"}
+- Prílet: letisko ${arr.name} GPS ${arr.lat},${arr.lng}
+- Odlet: letisko ${dep.name} GPS ${dep.lat},${dep.lng}
 - Počet osôb: ${input.people || 2}
 - Rozpočet: ${input.budget || 1500} € na osobu (bez medzinárodnej letenky)
 - Štýl: ${input.styles || "vyvážený mix"}
@@ -68,6 +81,8 @@ PRAVIDLÁ:
 4. Ceny v EUR realisticky (pho ~2 €, hotel 20–60 €, vstupné 1–15 €, plavba Ha Long ~130 €). Súčet drž v rozpočte.
 5. Časy vo formáte "HH:MM". Popisy po slovensky, konkrétne (názvy podnikov a miest, nie všeobecné frázy).
 6. Polia lat/lng dňa = hlavná lokalita dňa.
+7. Pri každej konkrétnej položke (atrakcia, reštaurácia, street food, hotel) uveď jej presné GPS lat/lng — použije sa na kliknutie v mape.
+8. Prvá položka dňa 1 je transfer PRÍLETU — jej lat/lng = GPS letiska príletu (${arr.lat},${arr.lng}), NIE hotel. Posledná položka posledného dňa je transfer ODLETU — lat/lng = GPS letiska odletu (${dep.lat},${dep.lng}).
 
 JSON SCHÉMA:
 {
@@ -86,7 +101,9 @@ JSON SCHÉMA:
           "title": "string",
           "description": "string (voliteľné)",
           "costEur": 0.0,
-          "durationMin": 60
+          "durationMin": 60,
+          "lat": 0.0,
+          "lng": 0.0
         }
       ]
     }
@@ -101,6 +118,8 @@ interface RawItem {
   description?: string;
   costEur?: number;
   durationMin?: number;
+  lat?: number;
+  lng?: number;
 }
 interface RawDay {
   day?: number;
@@ -139,6 +158,8 @@ function sanitize(raw: { title?: string; days?: RawDay[] }) {
           costEur: typeof it.costEur === "number" ? it.costEur : undefined,
           durationMin:
             typeof it.durationMin === "number" ? it.durationMin : undefined,
+          lat: typeof it.lat === "number" ? it.lat : undefined,
+          lng: typeof it.lng === "number" ? it.lng : undefined,
         })),
     }));
   if (!days.length) throw new Error("empty itinerary");
