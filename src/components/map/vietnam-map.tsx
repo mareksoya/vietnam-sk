@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { MapPin, ArrowRight } from "lucide-react";
 import type { Map as MapboxMap, Marker } from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import { destinations, type Destination } from "@/lib/data/destinations";
 import { cn } from "@/lib/utils";
 
