@@ -84,15 +84,18 @@ export function VietnamMap() {
         const el = document.createElement("button");
         el.type = "button";
         el.title = d.name;
+        // Bod: polomer 7px (14px), stroke #FFF 16px @ 50% opacity
         el.style.cssText = [
-          `width:${isSel ? 26 : 18}px`,
-          `height:${isSel ? 26 : 18}px`,
+          "width:46px",
+          "height:46px",
           "border-radius:50%",
-          `border:${isSel ? 4 : 3}px solid white`,
+          "border:16px solid rgba(255,255,255,0.5)",
+          "background-clip:padding-box",
           "cursor:pointer",
-          `box-shadow:0 2px 10px rgba(0,0,0,.35)${isSel ? ",0 0 0 6px rgba(201,162,39,.35)" : ""}`,
-          `background:${typeColors[d.type] ?? "#2d6a4f"}`,
-          "transition:all .2s ease",
+          `box-shadow:${isSel ? "0 0 0 4px rgba(201,162,39,.6)" : "0 1px 4px rgba(0,0,0,.25)"}`,
+          `background-color:${typeColors[d.type] ?? "#2d6a4f"}`,
+          "transition:box-shadow .2s ease",
+          "padding:0",
         ].join(";");
         el.addEventListener("click", (e) => {
           e.stopPropagation();
