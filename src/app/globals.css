@@ -26,9 +26,6 @@
   --color-accent-light: #e6edea;
   --color-muted: #f3f0e9; /* tlmené sekcie: sand 50 % na bg */
 
-  --font-display: var(--font-serif-display), Georgia, serif;
-  --font-sans: var(--font-body-sans), -apple-system, "Segoe UI", sans-serif;
-
   /* Shape & elevation (§2) */
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -51,10 +48,16 @@
   }
 }
 
+/* Fonty z next/font referencujú CSS premenné na <html> — preto @theme inline */
+@theme inline {
+  --font-display: var(--font-serif-display), Georgia, serif;
+  --font-sans: var(--font-body-sans), -apple-system, "Segoe UI", sans-serif;
+}
+
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-sans);
+  font-family: var(--font-body-sans), -apple-system, "Segoe UI", sans-serif;
   letter-spacing: -0.008em;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
@@ -62,7 +65,7 @@ body {
 
 h1,
 h2 {
-  font-family: var(--font-display);
+  font-family: var(--font-serif-display), Georgia, serif;
   font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.025em;

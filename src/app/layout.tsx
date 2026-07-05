@@ -43,8 +43,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="sk">
-      <body className={`${serifDisplay.variable} ${bodySans.variable} font-sans`}>
+    <html lang="sk" className={`${serifDisplay.variable} ${bodySans.variable}`}>
+      <body className="font-sans">
         <Header />
         <main>{children}</main>
         <Footer />
