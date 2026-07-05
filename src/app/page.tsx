@@ -59,7 +59,7 @@ export default function Home() {
       {/* ── HERO ─────────────────────────────────────── */}
       <section className="relative flex min-h-[100svh] flex-col items-center justify-center px-4 pb-16 pt-32">
         <Image
-          src="https://images.unsplash.com/photo-1528127269322-539801943592?w=2400&q=80"
+          src="/images/homepage_bg_AdobeStock_337232364.jpeg"
           alt="Zátoka Ha Long, Vietnam"
           fill
           priority
