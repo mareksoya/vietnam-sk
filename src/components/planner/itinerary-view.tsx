@@ -14,7 +14,16 @@ import {
   CalendarPlus,
 } from "lucide-react";
 import { cn, formatEur } from "@/lib/utils";
-import { sampleItinerary, type ItemType } from "@/lib/data/sample-itinerary";
+import {
+  sampleItinerary,
+  type ItemType,
+  type ItineraryDay,
+} from "@/lib/data/sample-itinerary";
+
+export interface Itinerary {
+  title: string;
+  days: ItineraryDay[];
+}
 
 const icons: Record<ItemType, React.ElementType> = {
   transfer: Bus,
@@ -34,31 +43,45 @@ const exportOptions = [
   { icon: Download, label: "GPX" },
 ];
 
-export function ItineraryView() {
-  const [activeDay, setActiveDay] = useState(1);
+export function ItineraryView({
+  itinerary,
+  note,
+}: {
+  itinerary?: Itinerary;
+  note?: string;
+}) {
+  const data = itinerary ?? sampleItinerary;
+  const [activeDay, setActiveDay] = useState(data.days[0]?.day ?? 1);
 
   const totalCost = useMemo(
     () =>
-      sampleItinerary.days.reduce(
+      data.days.reduce(
         (sum, d) => sum + d.items.reduce((s, i) => s + (i.costEur ?? 0), 0),
         0
       ),
-    []
+    [data]
   );
 
-  const day = sampleItinerary.days.find((d) => d.day === activeDay)!;
+  const day =
+    data.days.find((d) => d.day === activeDay) ?? data.days[0];
 
   return (
     <div className="animate-fade-up">
+      {note && (
+        <p className="mb-4 rounded-2xl bg-accent-light/70 p-4 text-sm text-accent">
+          {note}
+        </p>
+      )}
+
       {/* Súhrn + exporty */}
       <div className="glass flex flex-col items-start justify-between gap-4 rounded-3xl p-6 shadow-soft md:flex-row md:items-center">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight">
-            {sampleItinerary.title}
-          </h2>
+          <h2 className="text-xl font-semibold tracking-tight">{data.title}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {sampleItinerary.days.length} dní · odhad nákladov{" "}
-            <span className="font-semibold text-primary">{formatEur(totalCost)}</span>{" "}
+            {data.days.length} dní · odhad nákladov{" "}
+            <span className="font-semibold text-primary">
+              {formatEur(totalCost)}
+            </span>{" "}
             / osoba (bez letenky)
           </p>
         </div>
@@ -77,7 +100,7 @@ export function ItineraryView() {
 
       {/* Dni */}
       <div className="scroll-fade mt-6 flex gap-2 overflow-x-auto pb-1">
-        {sampleItinerary.days.map((d) => (
+        {data.days.map((d) => (
           <button
             key={d.day}
             onClick={() => setActiveDay(d.day)}
@@ -109,7 +132,7 @@ export function ItineraryView() {
 
           <ol className="mt-8 space-y-0">
             {day.items.map((item, i) => {
-              const Icon = icons[item.type];
+              const Icon = icons[item.type as ItemType] ?? Lightbulb;
               const isTip = item.type === "tip";
               return (
                 <li key={i} className="relative flex gap-4 pb-8 last:pb-0">
@@ -155,7 +178,7 @@ export function ItineraryView() {
           </ol>
         </div>
 
-        {/* Mini mapa dňa (statická, plná mapa v /mapa) */}
+        {/* Mini mapa dňa */}
         <aside className="h-fit space-y-4 lg:sticky lg:top-28">
           <div className="overflow-hidden rounded-3xl border border-border shadow-soft">
             <iframe
@@ -172,11 +195,10 @@ export function ItineraryView() {
             </div>
           </div>
           <div className="rounded-3xl bg-primary-light/60 p-5 text-sm leading-relaxed text-primary-dark">
-            <p className="font-semibold">💡 Ako to bude fungovať naostro</p>
+            <p className="font-semibold">💡 Tip</p>
             <p className="mt-2">
-              Toto je ukážkový itinerár. Vo Fáze 1 ho generuje OpenAI podľa
-              tvojich vstupov cez <code className="rounded bg-white/60 px-1">POST /api/planner/generate</code> —
-              vrátane hotelov podľa rozpočtu, tempa a preferencií.
+              Itinerár je orientačný — over si otváracie hodiny a odchody
+              dopravy deň vopred. Ceny sú odhady v EUR na osobu.
             </p>
           </div>
         </aside>

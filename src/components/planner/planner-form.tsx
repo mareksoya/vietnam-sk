@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ItineraryView } from "./itinerary-view";
+import { ItineraryView, type Itinerary } from "./itinerary-view";
 
 const extras = [
   { key: "kids", label: "Cestujem s deťmi" },
@@ -20,17 +20,49 @@ export function PlannerForm({ prefill }: { prefill: Record<string, string> }) {
     nightTrains: true,
   });
   const [state, setState] = useState<"form" | "loading" | "result">("form");
+  const [result, setResult] = useState<Itinerary | null>(null);
+  const [note, setNote] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<string | null>(null);
 
   const toggle = (k: string) => setFlags((f) => ({ ...f, [k]: !f[k] }));
 
   const generate = async () => {
     setState("loading");
-    // Fáza 1: fetch("/api/planner/generate", { method: "POST", body: JSON.stringify({...prefill, pace, ...flags}) })
-    await new Promise((r) => setTimeout(r, 2200));
-    setState("result");
+    setError(null);
+    try {
+      const res = await fetch("/api/planner/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...prefill, pace, ...flags }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.itinerary) {
+        throw new Error(data.error || "Generovanie zlyhalo, skús to znova.");
+      }
+      setResult(data.itinerary);
+      setNote(data.note);
+      setState("result");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Niečo sa pokazilo, skús to znova.");
+      setState("form");
+    }
   };
 
-  if (state === "result") return <ItineraryView />;
+  if (state === "result" && result) {
+    return (
+      <div>
+        <ItineraryView itinerary={result} note={note} />
+        <div className="mt-8 text-center">
+          <button
+            onClick={() => setState("form")}
+            className="rounded-full border border-border bg-white px-6 py-3 text-sm font-medium transition hover:border-primary/40 hover:text-primary cursor-pointer"
+          >
+            ← Upraviť zadanie a vygenerovať znova
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -82,6 +114,12 @@ export function PlannerForm({ prefill }: { prefill: Record<string, string> }) {
           ))}
         </div>
 
+        {error && (
+          <p className="mt-5 flex items-center gap-2 rounded-2xl bg-red-50 p-4 text-sm text-red-700">
+            <TriangleAlert size={16} /> {error}
+          </p>
+        )}
+
         <button
           onClick={generate}
           disabled={state === "loading"}
@@ -101,7 +139,8 @@ export function PlannerForm({ prefill }: { prefill: Record<string, string> }) {
         </button>
         {state === "loading" && (
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            Analyzujem presuny, počasie, otváracie hodiny a rozpočet…
+            Analyzujem presuny, počasie, otváracie hodiny a rozpočet… (do
+            minúty)
           </p>
         )}
       </div>
