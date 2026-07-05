@@ -1,0 +1,328 @@
+// Vietnam.sk — kompletný databázový model (Fáza 1: napojenie cez `npm i prisma @prisma/client`)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Geografia ────────────────────────────────────────────────
+
+model Region {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  name      String // Severný Vietnam, Stredný Vietnam, Južný Vietnam…
+  provinces Province[]
+}
+
+model Province {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  name         String
+  regionId     String
+  region       Region        @relation(fields: [regionId], references: [id])
+  lat          Float
+  lng          Float
+  destinations Destination[]
+  events       Event[]
+}
+
+enum DestinationType {
+  CITY
+  BEACH
+  MOUNTAIN
+  NATIONAL_PARK
+  ISLAND
+  UNESCO
+  VILLAGE
+}
+
+model Destination {
+  id              String          @id @default(cuid())
+  slug            String          @unique
+  name            String
+  type            DestinationType
+  provinceId      String
+  province        Province        @relation(fields: [provinceId], references: [id])
+  lat             Float
+  lng             Float
+  summary         String // krátky popis do kariet
+  body            String // dlhý obsah (markdown)
+  bestMonths      Int[] // 1–12
+  recommendedDays Int             @default(2)
+  nearestAirport  String?
+  heroImage       String?
+  seoTitle        String?
+  seoDescription  String?
+  published       Boolean         @default(false)
+  attractions     Attraction[]
+  media           Media[]
+  itineraryItems  ItineraryItem[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([type, published])
+}
+
+model Attraction {
+  id             String          @id @default(cuid())
+  slug           String          @unique
+  name           String
+  destinationId  String
+  destination    Destination     @relation(fields: [destinationId], references: [id])
+  lat            Float
+  lng            Float
+  category       String // chrám, múzeum, príroda, viewpoint, trh…
+  summary        String
+  history        String?
+  tips           String? // markdown zoznam tipov
+  openingHours   String?
+  entryFeeVnd    Int?
+  visitMinutes   Int? // odporúčaný čas návštevy
+  bestTimeOfDay  String?
+  rating         Float           @default(0)
+  ratingCount    Int             @default(0)
+  heroImage      String?
+  published      Boolean         @default(false)
+  media          Media[]
+  reviews        Review[]
+  itineraryItems ItineraryItem[]
+  relatedIds     String[] // podobné atrakcie (interné prelinkovanie)
+
+  @@index([destinationId, published])
+}
+
+// ── Udalosti ─────────────────────────────────────────────────
+
+enum EventCategory {
+  FESTIVAL
+  PUBLIC_HOLIDAY
+  NIGHT_MARKET
+  CONCERT
+  SPORT
+  EXHIBITION
+  LANTERN
+  LOCAL
+}
+
+model Event {
+  id             String        @id @default(cuid())
+  slug           String        @unique
+  name           String
+  category       EventCategory
+  provinceId     String?
+  province       Province?     @relation(fields: [provinceId], references: [id])
+  city           String?
+  startDate      DateTime
+  endDate        DateTime?
+  recurrence     String? // "yearly-lunar", "yearly", "monthly-full-moon"…
+  summary        String
+  body           String?
+  heroImage      String?
+  sourceUrl      String? // odkaz na oficiálny zdroj
+  published      Boolean       @default(false)
+  seoTitle       String?
+  seoDescription String?
+
+  @@index([startDate, category])
+}
+
+// ── Itineráre ────────────────────────────────────────────────
+
+enum ItineraryStatus {
+  DRAFT
+  GENERATED
+  CURATED
+  PUBLISHED
+}
+
+model Itinerary {
+  id           String          @id @default(cuid())
+  slug         String?         @unique // len kurátorské/publikované
+  title        String
+  status       ItineraryStatus @default(GENERATED)
+  userId       String?
+  user         User?           @relation(fields: [userId], references: [id])
+  days         Int
+  startDate    DateTime?
+  arrivalCode  String? // IATA letiska príletu
+  departCode   String?
+  budgetEur    Int?
+  travelStyles String[] // backpacking, rodina, luxus…
+  pace         String? // relaxed | balanced | fast
+  withKids     Boolean         @default(false)
+  motorbike    Boolean         @default(false)
+  nightTrains  Boolean         @default(false)
+  domesticFly  Boolean         @default(false)
+  aiModel      String?
+  dayPlans     ItineraryDay[]
+  createdAt    DateTime        @default(now())
+}
+
+model ItineraryDay {
+  id          String          @id @default(cuid())
+  itineraryId String
+  itinerary   Itinerary       @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  dayNumber   Int
+  title       String
+  summary     String?
+  items       ItineraryItem[]
+
+  @@unique([itineraryId, dayNumber])
+}
+
+enum ItemType {
+  TRANSFER
+  ATTRACTION
+  RESTAURANT
+  STREET_FOOD
+  HOTEL
+  TIP
+  FREE_TIME
+}
+
+model ItineraryItem {
+  id            String       @id @default(cuid())
+  dayId         String
+  day           ItineraryDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  order         Int
+  type          ItemType
+  title         String
+  description   String?
+  startTime     String? // "08:30"
+  durationMin   Int?
+  costEur       Float?
+  lat           Float?
+  lng           Float?
+  attractionId  String?
+  attraction    Attraction?  @relation(fields: [attractionId], references: [id])
+  destinationId String?
+  destination   Destination? @relation(fields: [destinationId], references: [id])
+}
+
+// ── Obsah & automatický import ───────────────────────────────
+
+enum ArticleStatus {
+  DRAFT
+  AI_REVIEW // vygenerované AI, čaká na schválenie
+  PUBLISHED
+  ARCHIVED
+}
+
+model Article {
+  id             String        @id @default(cuid())
+  slug           String        @unique
+  title          String
+  status         ArticleStatus @default(DRAFT)
+  category       String
+  excerpt        String
+  body           String // markdown
+  heroImage      String?
+  ogImage        String?
+  seoTitle       String?
+  seoDescription String?
+  isAiGenerated  Boolean       @default(false)
+  sourceId       String?
+  source         Source?       @relation(fields: [sourceId], references: [id])
+  sourceUrl      String? // pôvodný oficiálny odkaz
+  internalLinks  String[] // slugy prelinkovaných entít
+  publishedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([status, category])
+}
+
+model Source {
+  id         String      @id @default(cuid())
+  name       String // Vietnam National Authority of Tourism…
+  url        String
+  type       String // rss | html | api
+  category   String // tourism | transport | events | parks
+  active     Boolean     @default(true)
+  lastRunAt  DateTime?
+  articles   Article[]
+  importRuns ImportRun[]
+}
+
+model ImportRun {
+  id         String   @id @default(cuid())
+  sourceId   String
+  source     Source   @relation(fields: [sourceId], references: [id])
+  startedAt  DateTime @default(now())
+  finishedAt DateTime?
+  itemsFound Int      @default(0)
+  itemsNew   Int      @default(0)
+  status     String // ok | error
+  log        String?
+}
+
+// ── Používatelia ─────────────────────────────────────────────
+
+enum UserRole {
+  USER
+  EDITOR
+  ADMIN
+}
+
+model User {
+  id          String         @id @default(cuid())
+  email       String         @unique
+  name        String?
+  image       String?
+  role        UserRole       @default(USER)
+  itineraries Itinerary[]
+  favorites   Favorite[]
+  visited     VisitedPlace[]
+  reviews     Review[]
+  createdAt   DateTime       @default(now())
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String // destination | attraction | event | itinerary
+  entityId   String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, entityType, entityId])
+}
+
+model VisitedPlace {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String
+  entityId   String
+  visitedAt  DateTime @default(now())
+
+  @@unique([userId, entityType, entityId])
+}
+
+model Review {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attractionId String
+  attraction   Attraction @relation(fields: [attractionId], references: [id], onDelete: Cascade)
+  rating       Int // 1–5
+  text         String?
+  createdAt    DateTime   @default(now())
+
+  @@unique([userId, attractionId])
+}
+
+model Media {
+  id            String       @id @default(cuid())
+  url           String // Cloudinary
+  alt           String
+  credit        String?
+  destinationId String?
+  destination   Destination? @relation(fields: [destinationId], references: [id])
+  attractionId  String?
+  attraction    Attraction?  @relation(fields: [attractionId], references: [id])
+}

@@ -1,0 +1,42 @@
+# Vietnam.sk — Contabo deploy: docker compose up -d --build
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vietnam
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zmen-toto-heslo}
+      POSTGRES_DB: vietnamsk
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddydata:/data
+
+volumes:
+  pgdata:
+  redisdata:
+  caddydata:

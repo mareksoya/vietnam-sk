@@ -1,0 +1,4 @@
+vietnam.sk, www.vietnam.sk {
+	reverse_proxy web:3000
+	encode gzip zstd
+}

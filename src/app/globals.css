@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  /* Farby — Vietnam.sk dizajn systém */
+  --color-background: #fdfdfc;
+  --color-foreground: #1a1a1a;
+  --color-muted: #f4f5f3;
+  --color-muted-foreground: #6b7280;
+  --color-primary: #2d6a4f;
+  --color-primary-dark: #1b4332;
+  --color-primary-light: #d8f0e3;
+  --color-accent: #c9a227;
+  --color-accent-light: #f5ecd0;
+  --color-border: #e7e8e5;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-playfair), ui-serif, Georgia, serif;
+
+  --radius-xl2: 1.5rem;
+
+  --shadow-soft: 0 4px 24px rgb(0 0 0 / 0.06);
+  --shadow-lift: 0 12px 40px rgb(0 0 0 / 0.12);
+
+  --animate-fade-up: fade-up 0.6s ease-out both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glassmorphism panel */
+.glass {
+  background: rgb(255 255 255 / 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgb(255 255 255 / 0.45);
+}
+
+.glass-dark {
+  background: rgb(20 30 25 / 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgb(255 255 255 / 0.15);
+}
+
+/* Jemný scrollbar pre horizontálne carousely */
+.scroll-fade {
+  scrollbar-width: none;
+}
+.scroll-fade::-webkit-scrollbar {
+  display: none;
+}
+
+::selection {
+  background: var(--color-primary-light);
+}
