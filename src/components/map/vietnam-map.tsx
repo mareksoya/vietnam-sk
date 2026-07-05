@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { MapPin, ArrowRight } from "lucide-react";
+import type { Map as MapboxMap, Marker } from "mapbox-gl";
 import { destinations, type Destination } from "@/lib/data/destinations";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +19,9 @@ const typeColors: Record<string, string> = {
 };
 
 export function VietnamMap() {
-  const mapRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MapboxMap | null>(null);
+  const markersRef = useRef<Marker[]>([]);
   const [selected, setSelected] = useState<Destination | null>(null);
   const [filter, setFilter] = useState<string>("všetko");
   const [mapReady, setMapReady] = useState(false);
@@ -28,47 +31,89 @@ export function VietnamMap() {
       ? destinations
       : destinations.filter((d) => d.type === filter);
 
-  useEffect(() => {
-    if (!TOKEN || !mapRef.current) return;
-    let map: import("mapbox-gl").Map | undefined;
-    let markers: import("mapbox-gl").Marker[] = [];
+  const selectAndFly = useCallback((d: Destination) => {
+    setSelected(d);
+    mapRef.current?.flyTo({
+      center: [d.lng, d.lat],
+      zoom: 9.5,
+      duration: 1600,
+      essential: true,
+    });
+  }, []);
 
-    import("mapbox-gl").then((mapboxgl) => {
-      if (!mapRef.current) return;
-      mapboxgl.default.accessToken = TOKEN;
-      map = new mapboxgl.default.Map({
-        container: mapRef.current,
+  // Inicializácia mapy — raz
+  useEffect(() => {
+    if (!TOKEN || !containerRef.current || mapRef.current) return;
+    let cancelled = false;
+
+    import("mapbox-gl").then((mod) => {
+      if (cancelled || !containerRef.current) return;
+      const mapboxgl = mod.default;
+      mapboxgl.accessToken = TOKEN!;
+      const map = new mapboxgl.Map({
+        container: containerRef.current,
         style: "mapbox://styles/mapbox/outdoors-v12",
         center: [106.5, 16.2],
         zoom: 5,
       });
-      map.addControl(new mapboxgl.default.NavigationControl(), "top-right");
-
-      visible.forEach((d) => {
-        const el = document.createElement("button");
-        el.style.cssText = `width:18px;height:18px;border-radius:50%;border:3px solid white;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);background:${typeColors[d.type] ?? "#2d6a4f"}`;
-        el.addEventListener("click", () => setSelected(d));
-        markers.push(
-          new mapboxgl.default.Marker({ element: el })
-            .setLngLat([d.lng, d.lat])
-            .addTo(map!)
-        );
-      });
+      map.addControl(new mapboxgl.NavigationControl(), "top-right");
+      mapRef.current = map;
       setMapReady(true);
     });
 
     return () => {
-      markers.forEach((m) => m.remove());
-      map?.remove();
+      cancelled = true;
+      markersRef.current.forEach((m) => m.remove());
+      markersRef.current = [];
+      mapRef.current?.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  // Markery — pri zmene filtra alebo výberu
+  useEffect(() => {
+    if (!mapReady || !mapRef.current) return;
+    let cancelled = false;
+
+    import("mapbox-gl").then((mod) => {
+      if (cancelled || !mapRef.current) return;
+      markersRef.current.forEach((m) => m.remove());
+      markersRef.current = visible.map((d) => {
+        const isSel = selected?.slug === d.slug;
+        const el = document.createElement("button");
+        el.type = "button";
+        el.title = d.name;
+        el.style.cssText = [
+          `width:${isSel ? 26 : 18}px`,
+          `height:${isSel ? 26 : 18}px`,
+          "border-radius:50%",
+          `border:${isSel ? 4 : 3}px solid white`,
+          "cursor:pointer",
+          `box-shadow:0 2px 10px rgba(0,0,0,.35)${isSel ? ",0 0 0 6px rgba(201,162,39,.35)" : ""}`,
+          `background:${typeColors[d.type] ?? "#2d6a4f"}`,
+          "transition:all .2s ease",
+        ].join(";");
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectAndFly(d);
+        });
+        return new mod.default.Marker({ element: el })
+          .setLngLat([d.lng, d.lat])
+          .addTo(mapRef.current!);
+      });
+    });
+
+    return () => {
+      cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
+  }, [filter, mapReady, selected]);
 
   return (
     <div className="relative h-[calc(100svh-6rem)] w-full overflow-hidden rounded-[2rem] border border-border shadow-soft">
       {/* Mapbox alebo fallback */}
       {TOKEN ? (
-        <div ref={mapRef} className="h-full w-full" />
+        <div ref={containerRef} className="h-full w-full" />
       ) : (
         <iframe
           title="Mapa Vietnamu"
@@ -102,7 +147,7 @@ export function VietnamMap() {
           {visible.map((d) => (
             <li key={d.slug}>
               <button
-                onClick={() => setSelected(d)}
+                onClick={() => selectAndFly(d)}
                 className={cn(
                   "flex w-full items-center gap-2 rounded-2xl px-3 py-2.5 text-left text-sm transition hover:bg-white/80",
                   selected?.slug === d.slug && "bg-white shadow-soft"
@@ -137,7 +182,10 @@ export function VietnamMap() {
               <h3 className="mt-0.5 text-lg font-semibold">{selected.name}</h3>
             </div>
             <button
-              onClick={() => setSelected(null)}
+              onClick={() => {
+                setSelected(null);
+                mapRef.current?.flyTo({ center: [106.5, 16.2], zoom: 5, duration: 1200 });
+              }}
               className="rounded-full bg-white/70 px-2.5 py-1 text-xs hover:bg-white"
             >
               ✕
