@@ -23,6 +23,7 @@
   --color-primary-dark: #8e2a21;
   --color-primary-light: #e6edea; /* jade tint 10 % — pozadia tagov/chipov */
   --color-accent: #2f6d5e; /* sekundárny akcent = jade */
+  --color-accent-dark: #245a4c; /* jade-deep — hover interaktívnych jade prvkov */
   --color-accent-light: #e6edea;
   --color-muted: #f3f0e9; /* tlmené sekcie: sand 50 % na bg */
 

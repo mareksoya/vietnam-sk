@@ -46,9 +46,9 @@ export default function PracticalHub() {
             <Link
               key={t.slug}
               href={`/prakticke-info/${t.slug}`}
-              className="group flex gap-5 rounded-3xl border border-border bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lift"
+              className="group flex gap-5 rounded-3xl border border-border bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-lift"
             >
-              <span className="h-fit rounded-2xl bg-primary-light p-3.5 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+              <span className="h-fit rounded-2xl bg-accent-light p-3.5 text-accent transition-colors group-hover:bg-accent group-hover:text-white">
                 <Icon size={24} />
               </span>
               <div>
@@ -58,7 +58,7 @@ export default function PracticalHub() {
                 <p className="mt-1.5 text-sm leading-relaxed text-foreground/70">
                   {t.excerpt}
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-accent">
                   Čítať sprievodcu
                   <ArrowRight
                     size={14}

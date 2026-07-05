@@ -49,9 +49,9 @@ export default async function PracticalDetail({
       />
 
       <nav className="text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-primary">Domov</Link>
+        <Link href="/" className="hover:text-accent">Domov</Link>
         {" / "}
-        <Link href="/prakticke-info" className="hover:text-primary">
+        <Link href="/prakticke-info" className="hover:text-accent">
           Praktické info
         </Link>
         {" / "}
@@ -106,7 +106,7 @@ export default async function PracticalDetail({
           href={t.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+          className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline"
         >
           Oficiálny zdroj: {t.sourceName} <ExternalLink size={13} />
         </a>
@@ -115,7 +115,7 @@ export default async function PracticalDetail({
       <div className="mt-12 flex flex-col gap-3 sm:flex-row">
         <Link
           href="/prakticke-info"
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white px-6 py-3.5 text-sm font-medium transition hover:border-primary/40"
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white px-6 py-3.5 text-sm font-medium transition hover:border-accent/40"
         >
           <ArrowLeft size={15} /> Všetky témy
         </Link>

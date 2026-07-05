@@ -36,9 +36,9 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "text-sm underline-offset-[6px] transition-colors duration-150 hover:text-lacquer",
+                  "text-sm underline-offset-[6px] transition-colors duration-150 hover:text-jade",
                   active
-                    ? "text-lacquer underline decoration-2"
+                    ? "text-jade underline decoration-2"
                     : "text-foreground/80"
                 )}
               >

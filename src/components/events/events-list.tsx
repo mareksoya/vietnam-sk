@@ -22,13 +22,14 @@ const regions = [
   "Celý Vietnam",
 ] as const;
 
+// Tagy sú jade (§2) — kategóriu rozlišuje text, nie farba (žiadny rainbow, žiadna červená mimo CTA)
 const catColors: Record<string, string> = {
-  festival: "bg-primary-light text-primary-dark",
-  "štátny sviatok": "bg-red-50 text-red-700",
+  festival: "bg-accent-light text-accent",
+  "štátny sviatok": "bg-accent-light text-accent",
   "lampióny": "bg-accent-light text-accent",
-  "gastronómia": "bg-orange-50 text-orange-700",
-  "kultúra": "bg-sky-50 text-sky-700",
-  "šport": "bg-violet-50 text-violet-700",
+  "gastronómia": "bg-accent-light text-accent",
+  "kultúra": "bg-accent-light text-accent",
+  "šport": "bg-accent-light text-accent",
 };
 
 function fmtDate(iso: string) {
@@ -60,8 +61,8 @@ export function EventsList({ events }: { events: VnEvent[] }) {
             className={cn(
               "rounded-full border px-4 py-2 text-sm font-medium transition",
               cat === c
-                ? "border-primary bg-primary text-white shadow-soft"
-                : "border-border bg-white text-foreground/70 hover:border-primary/40"
+                ? "border-accent bg-accent text-white shadow-soft"
+                : "border-border bg-white text-foreground/70 hover:border-accent/40"
             )}
           >
             {c}
@@ -71,7 +72,7 @@ export function EventsList({ events }: { events: VnEvent[] }) {
         <select
           value={region}
           onChange={(e) => setRegion(e.target.value)}
-          className="h-10 rounded-full border border-border bg-white px-4 text-sm outline-none focus:border-primary"
+          className="h-10 rounded-full border border-border bg-white px-4 text-sm outline-none focus:border-accent"
         >
           {regions.map((r) => (
             <option key={r} value={r}>
@@ -88,8 +89,9 @@ export function EventsList({ events }: { events: VnEvent[] }) {
           return (
             <article
               key={e.slug}
+              id={e.slug}
               className={cn(
-                "rounded-3xl border border-border bg-white p-6 shadow-soft transition hover:shadow-lift md:p-7",
+                "scroll-mt-28 rounded-3xl border border-border bg-white p-6 shadow-soft transition hover:shadow-lift md:p-7",
                 past && "opacity-60"
               )}
             >
@@ -130,7 +132,7 @@ export function EventsList({ events }: { events: VnEvent[] }) {
                 href={e.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
               >
                 Zdroj: {e.sourceName} <ExternalLink size={11} />
               </a>

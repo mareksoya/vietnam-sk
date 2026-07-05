@@ -57,7 +57,7 @@ export function PlannerForm({ prefill }: { prefill: Record<string, string> }) {
         <div className="mt-8 text-center">
           <button
             onClick={() => setState("form")}
-            className="rounded-full border border-border bg-white px-6 py-3 text-sm font-medium transition hover:border-primary/40 hover:text-primary cursor-pointer"
+            className="rounded-full border border-border bg-white px-6 py-3 text-sm font-medium transition hover:border-accent/40 hover:text-accent cursor-pointer"
           >
             ← Upraviť zadanie a vygenerovať znova
           </button>
@@ -88,8 +88,8 @@ export function PlannerForm({ prefill }: { prefill: Record<string, string> }) {
                 className={cn(
                   "h-12 w-12 rounded-2xl border text-sm font-semibold transition-all",
                   days === d
-                    ? "border-primary bg-primary text-white shadow-soft"
-                    : "border-border bg-white hover:border-primary/40"
+                    ? "border-accent bg-accent text-white shadow-soft"
+                    : "border-border bg-white hover:border-accent/40"
                 )}
               >
                 {d}
@@ -110,8 +110,8 @@ export function PlannerForm({ prefill }: { prefill: Record<string, string> }) {
                 className={cn(
                   "rounded-2xl border px-4 py-3 text-sm font-medium transition-all",
                   pace === p
-                    ? "border-primary bg-primary text-white shadow-soft"
-                    : "border-border bg-white hover:border-primary/40"
+                    ? "border-accent bg-accent text-white shadow-soft"
+                    : "border-border bg-white hover:border-accent/40"
                 )}
               >
                 {p}
@@ -124,7 +124,7 @@ export function PlannerForm({ prefill }: { prefill: Record<string, string> }) {
           {extras.map((e) => (
             <label
               key={e.key}
-              className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border px-4 py-3.5 transition hover:border-primary/40"
+              className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border px-4 py-3.5 transition hover:border-accent/40"
             >
               <input
                 type="checkbox"

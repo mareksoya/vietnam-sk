@@ -12,7 +12,7 @@ export function Badge({
         "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium",
         gold
           ? "bg-accent-light text-accent"
-          : "bg-primary-light text-primary-dark",
+          : "bg-accent-light text-accent",
         className
       )}
       {...props}

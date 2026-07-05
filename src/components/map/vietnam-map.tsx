@@ -10,6 +10,59 @@ import { cn } from "@/lib/utils";
 
 const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
+/* Mapbox nemá slovenský dataset (name_sk neexistuje). Základ = latinka
+   (name_en → fallback name, žiadne čínske/lokálne znaky), a hlavné viditeľné
+   názvy (krajiny, moria, veľké mestá) prekladáme na slovenské exonymá. */
+const SK_NAMES: Record<string, string> = {
+  // Krajiny
+  China: "Čína",
+  Vietnam: "Vietnam",
+  Laos: "Laos",
+  Cambodia: "Kambodža",
+  Thailand: "Thajsko",
+  Myanmar: "Mjanmarsko",
+  Burma: "Mjanmarsko",
+  Philippines: "Filipíny",
+  Malaysia: "Malajzia",
+  Indonesia: "Indonézia",
+  India: "India",
+  Bangladesh: "Bangladéš",
+  Bhutan: "Bhután",
+  Nepal: "Nepál",
+  Taiwan: "Taiwan",
+  "South Korea": "Južná Kórea",
+  "North Korea": "Severná Kórea",
+  Japan: "Japonsko",
+  Singapore: "Singapur",
+  Brunei: "Brunej",
+  // Moria a zálivy
+  "South China Sea": "Juhočínske more",
+  "East Sea": "Juhočínske more",
+  "Gulf of Thailand": "Thajský záliv",
+  "Gulf of Tonkin": "Tonkinský záliv",
+  "Andaman Sea": "Andamanské more",
+  "Philippine Sea": "Filipínske more",
+  "Pacific Ocean": "Tichý oceán",
+  "Bay of Bengal": "Bengálsky záliv",
+  // Mestá / regióny
+  Hanoi: "Hanoj",
+  "Ho Chi Minh City": "Ho Či Minovo mesto",
+  Beijing: "Peking",
+  Guangzhou: "Kanton",
+  "Hong Kong": "Hongkong",
+  Macau: "Macao",
+  Yangon: "Rangún",
+  Hainan: "Chaj-nan",
+};
+
+/* text-field expression: preklad podľa name_en, inak latinka. */
+const SK_LABEL_EXPRESSION = [
+  "match",
+  ["get", "name_en"],
+  ...Object.entries(SK_NAMES).flatMap(([en, sk]) => [en, sk]),
+  ["coalesce", ["get", "name_en"], ["get", "name"]],
+];
+
 const typeColors: Record<string, string> = {
   mesto: "#2d6a4f",
   "pláž": "#0e7490",
@@ -58,6 +111,23 @@ export function VietnamMap() {
         zoom: 5,
       });
       map.addControl(new mapboxgl.NavigationControl(), "top-right");
+
+      // Slovenské popisky pre hlavné miesta, inak latinka (žiadne čínske znaky).
+      const setSlovakLabels = () => {
+        const layers = map.getStyle()?.layers ?? [];
+        for (const layer of layers) {
+          const layout = (layer as { layout?: Record<string, unknown> }).layout;
+          if (layer.type === "symbol" && layout && "text-field" in layout) {
+            map.setLayoutProperty(
+              layer.id,
+              "text-field",
+              SK_LABEL_EXPRESSION as never
+            );
+          }
+        }
+      };
+      map.on("style.load", setSlovakLabels);
+
       mapRef.current = map;
       setMapReady(true);
     });
@@ -127,10 +197,10 @@ export function VietnamMap() {
         />
       )}
 
-      {/* Filter panel */}
-      <div className="glass absolute left-4 top-4 z-10 max-h-[calc(100%-2rem)] w-72 overflow-y-auto rounded-3xl p-4 shadow-lift">
+      {/* Filter panel — hlavička (názov + tagy) fixná, scrolluje sa len zoznam */}
+      <div className="absolute left-4 top-4 z-10 flex max-h-[calc(100%-2rem)] w-72 flex-col rounded-3xl border border-border bg-surface/70 p-4 shadow-lift backdrop-blur-sm">
         <p className="px-1 text-sm font-semibold">Objavuj na mape</p>
-        <div className="mt-3 flex flex-wrap gap-1.5">
+        <div className="mt-3 flex flex-shrink-0 flex-wrap gap-1.5">
           {["všetko", "mesto", "pláž", "hory", "národný park", "ostrov", "UNESCO"].map(
             (t) => (
               <button
@@ -139,7 +209,7 @@ export function VietnamMap() {
                 className={cn(
                   "rounded-full px-3 py-1.5 text-xs font-medium transition",
                   filter === t
-                    ? "bg-primary text-white"
+                    ? "bg-accent text-white"
                     : "bg-white/70 text-foreground/70 hover:bg-white"
                 )}
               >
@@ -148,14 +218,14 @@ export function VietnamMap() {
             )
           )}
         </div>
-        <ul className="mt-4 space-y-1">
+        <ul className="scroll-fade mt-4 min-h-0 flex-1 space-y-1 overflow-y-auto">
           {visible.map((d) => (
             <li key={d.slug}>
               <button
                 onClick={() => selectAndFly(d)}
                 className={cn(
-                  "flex w-full items-center gap-2 rounded-2xl px-3 py-2.5 text-left text-sm transition hover:bg-white/80",
-                  selected?.slug === d.slug && "bg-white shadow-soft"
+                  "flex w-full items-center gap-2 rounded-2xl px-3 py-2.5 text-left text-sm transition hover:bg-sand",
+                  selected?.slug === d.slug && "bg-sand shadow-soft"
                 )}
               >
                 <MapPin
@@ -178,7 +248,7 @@ export function VietnamMap() {
 
       {/* Detail karta */}
       {selected && (
-        <div className="glass absolute bottom-4 left-4 right-4 z-10 mx-auto max-w-md rounded-3xl p-5 shadow-lift md:left-auto md:right-4">
+        <div className="absolute bottom-4 left-4 right-4 z-10 mx-auto max-w-md rounded-3xl border border-border bg-surface/90 p-5 shadow-lift backdrop-blur-sm md:left-auto md:right-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-wide text-accent">
@@ -201,7 +271,7 @@ export function VietnamMap() {
           </p>
           <Link
             href={`/destinacie/${selected.slug}`}
-            className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline"
           >
             Otvoriť destináciu <ArrowRight size={14} />
           </Link>

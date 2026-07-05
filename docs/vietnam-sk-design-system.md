@@ -36,6 +36,7 @@ Semantic variables only. Never hardcode hex values in components.
   --color-lacquer:       #B3372B;  /* lacquer red — primary CTA, active nav, links on hover */
   --color-lacquer-deep:  #8E2A21;  /* hover/pressed state of lacquer */
   --color-jade:          #2F6D5E;  /* Hạ Long jade — secondary accent: tags, success, map markers */
+  --color-jade-deep:     #245A4C;  /* jade-deep — hover interaktívnych jade prvkov (accent-dark) */
   --color-sand:          #EFE7D8;  /* warm sand — highlighted info boxes, practical-tip panels */
 
   /* Functional */
@@ -45,8 +46,8 @@ Semantic variables only. Never hardcode hex values in components.
 ```
 
 **Usage rules:**
-- `--color-lacquer` only for: primary button, active navigation state, inline link hover. Never for backgrounds larger than a button, never for headings.
-- `--color-jade` only for: category tags, map pins, success states, small metadata icons.
+- *(2026-07-05 — spresnenie)* **`--color-lacquer` LEN na hlavné CTA tlačidlá** (jedno primárne CTA na pohľad) a na značkový wordmark „`.sk`". Nič iné. Aktívna navigácia, hover odkazov, aktívne filtre/čipy, tagy, metadata ikony, akcentové texty — **všetko jade**. Chybové stavy zostávajú lacquer (semantická červená). Nikdy pozadia väčšie ako tlačidlo, nikdy nadpisy.
+- `--color-jade` for: active navigation state, inline link hover, category tags, active filters/chips, map pins, success states, small metadata icons, accent figures. Hover interaktívnych jade prvkov používa `--color-accent-dark` (jade-deep `#245A4C`).
 - `--color-sand` only for: "practical info" boxes (visa, prices, transport). This becomes the site's recognizable pattern — readers learn that sand background = actionable facts.
 - Photos are the only large color surfaces. UI stays in the neutral range.
 - Dark sections (footer, occasional full-bleed photo overlays) use `--color-ink` as background with `--color-bg` text.
@@ -175,6 +176,9 @@ Loading rules:
 - **2026-07-05 · Prijatie design systému.** Web dovtedy bežal na provizórnom vizuáli (Inter + Playfair, zelená/zlatá, glassmorphism) — celý sa migruje na tento dokument. Hotovo: tokeny v `globals.css`, fonty cez next/font, header, footer, homepage (hero 60vh + scrim, sand box, editorial sekcie), destination card (3:2, jade tag, meta tabular-nums).
 - **2026-07-05 · Fonty cez next/font** (detail v §2) — self-hosting splnený bez manuálnych woff2.
 - **2026-07-05 · Jade tint 10 % `#E6EDEA`** povolený pre pozadia tagov/chipov (detail v §2 Usage rules).
+- **2026-07-05 · Červená len na hlavné CTA.** Lacquer sa sťahuje výhradne na primárne CTA tlačidlá (+ wordmark `.sk`); aktívna navigácia, hover odkazov, aktívne filtre, tagy, metadata ikony a akcentové texty sa naprieč webom prepli na **jade**. Pridaný token `--color-accent-dark` / `--color-jade-deep` `#245A4C` pre hover jade prvkov. Kategórie udalostí zjednotené na jade tint (zrušený „rainbow" sky/orange/violet/red — rozlišuje text, nie farba, súlad s §2 a §9 „one accent").
+- **2026-07-05 · Hero úvodky = fotka na celé pozadie.** Hero má fotku cez celý priestor (min-h 70vh) + legibility gradient; plánovač už nie je na úvodke (len na `/planovac`), v hero ostal nadpis, lead a jedno CTA „Spustiť plánovač". Kalendár na úvodke má deep-linky na `/udalosti#slug` (kotvy doplnené do zoznamu udalostí).
+- **2026-07-05 · Mapa.** Popisky: Mapbox nemá slovenský dataset (`name_sk` neexistuje), preto základ = latinka (`name_en` → fallback `name`, žiadne čínske znaky) + **slovník slovenských exoným** (`SK_NAMES` v `vietnam-map.tsx`) pre hlavné viditeľné názvy (krajiny vrátane Číny, moria, veľké mestá). Rozšíriteľné pridaním do slovníka. Panely mapy (filter + detail) mali nedefinovanú triedu `.glass` (priehľadné, nečitateľné) → podfarbené na `bg-surface/70` + border (súlad so zákazom glassmorphism §9). Hover položiek v zozname používa `sand` (predtým biela → v bielom paneli nebola vidno). Ľavý panel: hlavička (názov + filter tagy) fixná, scrolluje sa len zoznam miest.
 - **2026-07-05 · Migračný dlh:** vnútorné stránky (/planovac, /mapa, /udalosti, /prakticke-info, /destinacie/[slug]) zdedili nové tokeny cez CSS premenné, ale ešte používajú staré tvary (rounded-full pills, rounded-3xl karty). Postupne sa prepisujú na radius-sm/md/lg podľa §2 — pri každej ďalšej úprave súboru zosúladiť.
 
 ---

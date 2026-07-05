@@ -79,7 +79,7 @@ export function ItineraryView({
           <h2 className="text-xl font-semibold tracking-tight">{data.title}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {data.days.length} dní · odhad nákladov{" "}
-            <span className="font-semibold text-primary">
+            <span className="font-semibold text-accent">
               {formatEur(totalCost)}
             </span>{" "}
             / osoba (bez letenky)
@@ -89,7 +89,7 @@ export function ItineraryView({
           {exportOptions.map((e) => (
             <button
               key={e.label}
-              className="flex items-center gap-1.5 rounded-full border border-border bg-white px-3.5 py-2 text-xs font-medium transition hover:border-primary/40 hover:text-primary cursor-pointer"
+              className="flex items-center gap-1.5 rounded-full border border-border bg-white px-3.5 py-2 text-xs font-medium transition hover:border-accent/40 hover:text-accent cursor-pointer"
               title="Export bude aktívny vo Fáze 3"
             >
               <e.icon size={13} /> {e.label}
@@ -107,8 +107,8 @@ export function ItineraryView({
             className={cn(
               "shrink-0 rounded-full px-5 py-2.5 text-sm font-medium transition-all",
               activeDay === d.day
-                ? "bg-primary text-white shadow-soft"
-                : "bg-white border border-border text-foreground/70 hover:border-primary/40"
+                ? "bg-accent text-white shadow-soft"
+                : "bg-white border border-border text-foreground/70 hover:border-accent/40"
             )}
           >
             Deň {d.day}
@@ -144,7 +144,7 @@ export function ItineraryView({
                       "z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl",
                       isTip
                         ? "bg-accent-light text-accent"
-                        : "bg-primary-light text-primary-dark"
+                        : "bg-accent-light text-accent"
                     )}
                   >
                     <Icon size={19} />
@@ -152,7 +152,7 @@ export function ItineraryView({
                   <div className="min-w-0 pt-0.5">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                       {item.time && (
-                        <span className="flex items-center gap-1 text-xs font-semibold text-primary">
+                        <span className="flex items-center gap-1 text-xs font-semibold text-accent">
                           <Clock size={11} /> {item.time}
                         </span>
                       )}
@@ -194,7 +194,7 @@ export function ItineraryView({
               </p>
             </div>
           </div>
-          <div className="rounded-3xl bg-primary-light/60 p-5 text-sm leading-relaxed text-primary-dark">
+          <div className="rounded-3xl bg-accent-light/60 p-5 text-sm leading-relaxed text-accent">
             <p className="font-semibold">💡 Tip</p>
             <p className="mt-2">
               Itinerár je orientačný — over si otváracie hodiny a odchody

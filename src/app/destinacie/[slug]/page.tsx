@@ -64,7 +64,7 @@ export default async function DestinationDetail({
       />
 
       {/* Hero */}
-      <div className="relative h-[60svh] min-h-[420px]">
+      <div className="relative h-[72svh] min-h-[500px]">
         <Image src={d.image} alt={d.name} fill priority className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/20" />
         <div className="absolute inset-x-0 bottom-0 mx-auto max-w-6xl px-6 pb-10">
@@ -86,9 +86,9 @@ export default async function DestinationDetail({
 
       {/* Quick facts */}
       <div className="mx-auto -mt-8 max-w-6xl px-6">
-        <div className="glass relative z-10 grid grid-cols-2 gap-4 rounded-3xl p-6 shadow-lift md:grid-cols-4">
+        <div className="relative z-10 grid grid-cols-2 gap-4 rounded-3xl border border-border bg-surface p-6 shadow-lift md:grid-cols-4">
           <div className="flex items-center gap-3">
-            <CalendarDays size={20} className="text-primary" />
+            <CalendarDays size={20} className="text-accent" />
             <div>
               <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                 Najlepší čas
@@ -99,7 +99,7 @@ export default async function DestinationDetail({
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Clock size={20} className="text-primary" />
+            <Clock size={20} className="text-accent" />
             <div>
               <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                 Odporúčané
@@ -108,7 +108,7 @@ export default async function DestinationDetail({
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Plane size={20} className="text-primary" />
+            <Plane size={20} className="text-accent" />
             <div>
               <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                 Letisko
@@ -117,7 +117,7 @@ export default async function DestinationDetail({
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <MapPin size={20} className="text-primary" />
+            <MapPin size={20} className="text-accent" />
             <div>
               <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                 Región
@@ -179,7 +179,7 @@ export default async function DestinationDetail({
             </h2>
             <Link
               href="/destinacie"
-              className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+              className="flex items-center gap-1 text-sm font-medium text-accent hover:underline"
             >
               Všetky <ArrowRight size={14} />
             </Link>

@@ -23,7 +23,7 @@ export function ComingSoon({
       <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground md:text-base">
         {description}
       </p>
-      <p className="mt-6 rounded-full bg-primary-light px-5 py-2 text-xs font-semibold text-primary-dark">
+      <p className="mt-6 rounded-full bg-accent-light px-5 py-2 text-xs font-semibold text-accent">
         Pripravujeme — {phase}
       </p>
       <Link
