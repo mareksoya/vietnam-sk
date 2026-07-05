@@ -6,65 +6,57 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
     links: [
       { label: "Destinácie", href: "/destinacie" },
       { label: "Interaktívna mapa", href: "/mapa" },
-      { label: "UNESCO pamiatky", href: "/destinacie?typ=UNESCO" },
-      { label: "Pláže a ostrovy", href: "/destinacie?typ=pláž" },
-      { label: "Národné parky", href: "/destinacie?typ=národný park" },
-    ],
-  },
-  {
-    title: "Plánovanie",
-    links: [
-      { label: "AI Plánovač", href: "/planovac" },
-      { label: "Itineráre", href: "/itinerare" },
       { label: "Udalosti a festivaly", href: "/udalosti" },
-      { label: "Počasie", href: "/prakticke-info" },
+      { label: "Itineráre", href: "/itinerare" },
     ],
   },
   {
     title: "Praktické info",
     links: [
-      { label: "Víza", href: "/prakticke-info" },
-      { label: "SIM a eSIM", href: "/prakticke-info" },
-      { label: "Mena a ceny", href: "/prakticke-info" },
-      { label: "Bezpečnosť a scamy", href: "/prakticke-info" },
-      { label: "Zdravie a očkovanie", href: "/prakticke-info" },
+      { label: "Víza a vstup", href: "/prakticke-info/viza" },
+      { label: "SIM a internet", href: "/prakticke-info/sim-esim-internet" },
+      { label: "Mena a ceny", href: "/prakticke-info/mena-a-ceny" },
+      { label: "Bezpečnosť a scamy", href: "/prakticke-info/bezpecnost-a-scamy" },
+      { label: "Zdravie a očkovanie", href: "/prakticke-info/zdravie-a-ockovanie" },
+      { label: "Doprava", href: "/prakticke-info/doprava" },
     ],
   },
   {
-    title: "Nástroje",
+    title: "Plánovanie",
     links: [
-      { label: "Kalkulačka rozpočtu", href: "/nastroje" },
-      { label: "Prevod meny", href: "/nastroje" },
-      { label: "Checklist pred odletom", href: "/nastroje" },
-      { label: "Vietnamčina pre turistov", href: "/nastroje" },
+      { label: "AI plánovač itinerára", href: "/planovac" },
+      { label: "Gastronómia", href: "/gastro" },
+      { label: "Digitálni nomádi", href: "/nomadi" },
+      { label: "Nástroje", href: "/nastroje" },
     ],
   },
 ];
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-border bg-muted/60">
-      <div className="mx-auto max-w-6xl px-6 py-16">
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-5">
+    <footer className="mt-24 bg-foreground text-background">
+      <div className="mx-auto max-w-[1200px] px-4 py-16 md:px-8">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
-            <p className="text-lg font-semibold">
-              <span className="text-primary">Vietnam</span>
-              <span className="text-accent">.sk</span>
+            <p className="font-display text-xl font-medium">
+              vietnam<span className="text-lacquer">.sk</span>
             </p>
-            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              Inteligentný cestovateľský sprievodca Vietnamom pre slovenských a
-              českých cestovateľov.
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-background/70">
+              Sprievodca Vietnamom pre slovenských a českých cestovateľov.
+              Konkrétne rady, reálne ceny, žiadne marketingové superlatívy.
             </p>
           </div>
           {columns.map((col) => (
             <div key={col.title}>
-              <p className="text-sm font-semibold">{col.title}</p>
+              <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-background/60">
+                {col.title}
+              </p>
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((l) => (
                   <li key={l.label}>
                     <Link
                       href={l.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                      className="text-sm text-background/85 underline-offset-4 transition-colors duration-150 hover:text-background hover:underline"
                     >
                       {l.label}
                     </Link>
@@ -74,9 +66,9 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-xs text-muted-foreground md:flex-row">
-          <p>© {new Date().getFullYear()} Vietnam.sk — všetky práva vyhradené</p>
-          <p>Vytvorené s láskou k Vietnamu 🇻🇳</p>
+        <div className="mt-14 flex flex-col justify-between gap-3 border-t border-background/15 pt-8 text-[13px] text-background/60 md:flex-row">
+          <p className="data-num">© {new Date().getFullYear()} vietnam.sk</p>
+          <p>Fotografie: Adobe Stock (licencované)</p>
         </div>
       </div>
     </footer>
