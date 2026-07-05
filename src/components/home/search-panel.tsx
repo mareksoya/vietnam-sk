@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Sparkles, MapPin, CalendarDays, Users, Wallet, Plane } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const travelStyles = [
@@ -25,7 +24,9 @@ const airports = [
 ];
 
 const inputCls =
-  "h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light";
+  "h-11 w-full rounded-sm border border-border bg-surface px-3.5 text-sm outline-none transition-colors duration-150 focus:border-jade";
+
+const labelCls = "mb-1.5 block text-[13px] font-medium text-muted-foreground";
 
 export function SearchPanel() {
   const router = useRouter();
@@ -41,8 +42,10 @@ export function SearchPanel() {
     budget: "1500",
   });
 
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }));
+  const set =
+    (k: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const toggleStyle = (s: string) =>
     setStyles((prev) =>
@@ -55,91 +58,102 @@ export function SearchPanel() {
   };
 
   return (
-    <div className="glass w-full max-w-4xl rounded-[2rem] p-6 shadow-lift md:p-8">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div className="w-full rounded-lg border border-border bg-surface p-6 shadow-lift md:p-8">
+      <p className="eyebrow">Plánovač cesty</p>
+      <h2 className="mt-2 text-[25px] font-semibold">
+        Naplánuj si Vietnam na mieru
+      </h2>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         <label className="block">
-          <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-foreground/70">
-            <MapPin size={13} /> Kam chceš ísť?
-          </span>
+          <span className={labelCls}>Kam chceš ísť?</span>
           <input
             className={inputCls}
-            placeholder="Celý Vietnam, sever, Hoi An…"
+            placeholder="Celý Vietnam, sever, Hội An…"
             value={form.where}
             onChange={set("where")}
           />
         </label>
         <label className="block">
-          <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-foreground/70">
-            <CalendarDays size={13} /> Koľko dní?
-          </span>
+          <span className={labelCls}>Koľko dní?</span>
           <input
             type="number"
             min={3}
             max={60}
-            className={inputCls}
+            className={cn(inputCls, "data-num text-foreground")}
             value={form.days}
             onChange={set("days")}
           />
         </label>
         <label className="block">
-          <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-foreground/70">
-            <CalendarDays size={13} /> Kedy cestuješ?
-          </span>
-          <input type="date" className={inputCls} value={form.date} onChange={set("date")} />
+          <span className={labelCls}>Kedy cestuješ?</span>
+          <input
+            type="date"
+            className={cn(inputCls, "data-num text-foreground")}
+            value={form.date}
+            onChange={set("date")}
+          />
         </label>
         <label className="block">
-          <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-foreground/70">
-            <Plane size={13} /> Odkiaľ prilietaš?
-          </span>
+          <span className={labelCls}>Odkiaľ prilietaš?</span>
           <input className={inputCls} value={form.from} onChange={set("from")} />
         </label>
         <label className="block">
-          <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-foreground/70">
-            <Plane size={13} /> Prílet do
-          </span>
+          <span className={labelCls}>Prílet do</span>
           <select className={inputCls} value={form.arrive} onChange={set("arrive")}>
             {airports.map((a) => (
-              <option key={a.code} value={a.code}>{a.label}</option>
+              <option key={a.code} value={a.code}>
+                {a.label}
+              </option>
             ))}
           </select>
         </label>
         <label className="block">
-          <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-foreground/70">
-            <Plane size={13} className="rotate-45" /> Odlet z
-          </span>
+          <span className={labelCls}>Odlet z</span>
           <select className={inputCls} value={form.depart} onChange={set("depart")}>
             {airports.map((a) => (
-              <option key={a.code} value={a.code}>{a.label}</option>
+              <option key={a.code} value={a.code}>
+                {a.label}
+              </option>
             ))}
           </select>
         </label>
         <label className="block">
-          <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-foreground/70">
-            <Users size={13} /> Počet osôb
-          </span>
-          <input type="number" min={1} max={12} className={inputCls} value={form.people} onChange={set("people")} />
+          <span className={labelCls}>Počet osôb</span>
+          <input
+            type="number"
+            min={1}
+            max={12}
+            className={cn(inputCls, "data-num text-foreground")}
+            value={form.people}
+            onChange={set("people")}
+          />
         </label>
         <label className="block md:col-span-2">
-          <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-foreground/70">
-            <Wallet size={13} /> Rozpočet na osobu (€, bez letenky)
-          </span>
-          <input type="number" step={100} className={inputCls} value={form.budget} onChange={set("budget")} />
+          <span className={labelCls}>Rozpočet na osobu (€, bez letenky)</span>
+          <input
+            type="number"
+            step={100}
+            className={cn(inputCls, "data-num text-foreground")}
+            value={form.budget}
+            onChange={set("budget")}
+          />
         </label>
       </div>
 
-      <div className="mt-5">
-        <span className="text-xs font-medium text-foreground/70">Typ cestovania</span>
-        <div className="mt-2 flex flex-wrap gap-2">
+      <div className="mt-6">
+        <span className={labelCls}>Typ cestovania</span>
+        <div className="mt-1 flex flex-wrap gap-2">
           {travelStyles.map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => toggleStyle(s)}
               className={cn(
-                "rounded-full border px-4 py-2 text-sm transition-all duration-200",
+                "rounded-sm border px-3 py-1.5 text-[13px] font-medium transition-colors duration-150",
                 styles.includes(s)
-                  ? "border-primary bg-primary text-white shadow-soft"
-                  : "border-border bg-white/70 text-foreground/80 hover:border-primary/50"
+                  ? "border-jade bg-jade text-white"
+                  : "border-border bg-surface text-muted-foreground hover:border-jade"
               )}
             >
               {s}
@@ -150,10 +164,9 @@ export function SearchPanel() {
 
       <button
         onClick={submit}
-        className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-primary text-base font-semibold text-white shadow-lift transition hover:bg-primary-dark active:scale-[0.99] cursor-pointer"
+        className="mt-7 h-11 w-full rounded-md bg-lacquer px-5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-lacquer-deep md:w-auto"
       >
-        <Sparkles size={18} className="text-accent-light" />
-        Vytvor itinerár
+        Vytvoriť itinerár
       </button>
     </div>
   );
