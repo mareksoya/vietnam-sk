@@ -13,8 +13,10 @@ const extras = [
 ] as const;
 
 const paces = ["Pohodové", "Vyvážené", "Intenzívne"] as const;
+const dayOptions = [5, 7, 9, 10, 11, 12, 14] as const;
 
 export function PlannerForm({ prefill }: { prefill: Record<string, string> }) {
+  const [days, setDays] = useState<number>(Number(prefill.days) || 10);
   const [pace, setPace] = useState<string>("Vyvážené");
   const [flags, setFlags] = useState<Record<string, boolean>>({
     nightTrains: true,
@@ -33,7 +35,7 @@ export function PlannerForm({ prefill }: { prefill: Record<string, string> }) {
       const res = await fetch("/api/planner/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...prefill, pace, ...flags }),
+        body: JSON.stringify({ ...prefill, days, pace, ...flags }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.itinerary) {
@@ -69,11 +71,32 @@ export function PlannerForm({ prefill }: { prefill: Record<string, string> }) {
       <div className="rounded-[2rem] border border-border bg-white p-6 shadow-soft md:p-8">
         <h2 className="text-lg font-semibold">Doladenie itinerára</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          {prefill.days ? `${prefill.days} dní` : "14 dní"} ·{" "}
           {prefill.arrive || "HAN"} → {prefill.depart || "SGN"} ·{" "}
           {prefill.budget ? `${prefill.budget} € / os.` : "rozpočet neurčený"}
           {prefill.styles ? ` · ${prefill.styles.split(",").join(", ")}` : ""}
         </p>
+
+        <div className="mt-6">
+          <span className="text-xs font-medium text-foreground/70">
+            Počet dní
+          </span>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {dayOptions.map((d) => (
+              <button
+                key={d}
+                onClick={() => setDays(d)}
+                className={cn(
+                  "h-12 w-12 rounded-2xl border text-sm font-semibold transition-all",
+                  days === d
+                    ? "border-primary bg-primary text-white shadow-soft"
+                    : "border-border bg-white hover:border-primary/40"
+                )}
+              >
+                {d}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="mt-6">
           <span className="text-xs font-medium text-foreground/70">
